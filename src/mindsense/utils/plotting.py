@@ -56,9 +56,17 @@ def barplot(
 ) -> Any:
     """Seaborn barplot with house style (returns the figure)."""
     fig, ax = plt.subplots(figsize=figsize)
-    sns.barplot(data=data, x=x, y=y, hue=hue, ax=ax, palette=PALETTE, edgecolor=None)
-    style_axes(ax, title, xlabel, ylabel)
-    if hue:
+    if hue is None:
+        # Single-series bars: pass hue=x so modern seaborn accepts a full
+        # colour cycle without the "palette without hue" deprecation.
+        sns.barplot(
+            data=data, x=x, y=y, hue=x,
+            palette=sns.color_palette(PALETTE, data[x].nunique()),
+            legend=False, ax=ax,
+        )
+    else:
+        sns.barplot(data=data, x=x, y=y, hue=hue, ax=ax, palette=PALETTE)
         ax.legend(frameon=False, fontsize=9)
+    style_axes(ax, title, xlabel, ylabel)
     fig.tight_layout()
     return fig

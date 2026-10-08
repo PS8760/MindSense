@@ -1,8 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "mindsense"
 version = "1.0.0"
 description = "MindSense: early, explainable mental-wellness risk screening (academic mini project)."
 requires-python = ">=3.11,<3.13"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "MindSense team (Honors Lab, AI & ML in Healthcare)" }]
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.ruff]
 line-length = 100
@@ -22,5 +32,6 @@ ignore = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]
 addopts = "-q"
 filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]

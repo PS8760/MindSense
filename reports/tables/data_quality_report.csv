@@ -1,0 +1,16 @@
+dataset,stage,rows_in,rows_out,dropped,note
+student_depression,clean,27901,27901,0,0 duplicate rows removed; sleep/diet recoded to numeric; 0 impossible ages dropped
+student_depression_small,clean,502,502,0,0 duplicate rows removed; sleep/diet recoded to numeric; 0 impossible ages dropped
+sentiment_mh,clean,53043,50843,2200,1608 duplicate statements removed; 230 too-short after normalisation
+dass42,clean,39775,38337,1438,"invalid respondents removed: fake words>=2, age outside 10-100, straight-liners, test time <60s; items recoded 1-4 -> 0-3; bands on raw sum 0-42 (no x2 — see DECISIONS.md)"
+osmi_2014,clean,1259,1251,8,8 impossible ages dropped; 0 without treatment label dropped; work_interfere NaN -> 'Not applicable'
+osmi_2017_21,clean,756,754,2,2 impossible ages dropped; 0 without treatment label dropped; work_interfere NaN -> 'Not applicable'
+drug_reviews,clean,215063,26832,188231,"kept MH conditions only (171279 other conditions dropped); 0 empty, 16952 duplicate reviews removed"
+fer2013,clean,35887,35887,0,35887 images indexed
+dreaddit,clean,3553,3532,21,21 cross-split duplicate texts removed (leakage guard)
+risk_harmonized,harmonize,29152,29152,0,"mh_risk rate 0.5821; {'student': 27901, 'professional': 1251}"
+osmi_2017,harmonize,754,754,0,"external evaluation only (Exp 6), never trained on"
+student_small,harmonize,502,502,0,"external evaluation only (Exp 6), never trained on"
+sentiment_mh,split,50843,50843,0,stratified by label
+dass42,split,38337,38337,0,stratified by depression_band
+text_leakage,leakage_check,0,0,2819,exact normalised-text overlap between corpora

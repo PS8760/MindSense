@@ -88,8 +88,8 @@ datasets:
   student_depression_small:
     rank: 9
     tier: C
-    kaggle: ikynahidwin/depressionstunt-dataset
-    source_url: https://www.kaggle.com/datasets/ikynahidwin/depressionstunt-dataset
+    kaggle: ikynahidwin/depression-student-dataset
+    source_url: https://www.kaggle.com/datasets/ikynahidwin/depression-student-dataset
     licence: "See Kaggle dataset page"
     population: student
     experiments: [6, 8]

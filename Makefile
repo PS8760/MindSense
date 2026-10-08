@@ -16,8 +16,13 @@ help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
 
 setup: ## Create venv + install runtime & training dependencies
-	$(VENV)/bin/python -m pip --version >/dev/null 2>&1 || (echo "Create the venv first: uv venv --python 3.11 .venv" && exit 1)
-	$(PIP) install -r requirements-train.txt
+	@if $(PYV) -m pip --version >/dev/null 2>&1; then \
+		$(PYV) -m pip install -r requirements-train.txt; \
+	elif command -v uv >/dev/null 2>&1; then \
+		uv pip install --python $(PYV) -r requirements-train.txt; \
+	else \
+		echo "venv has no pip and uv not found; recreate with: uv venv --python 3.11 .venv"; exit 1; \
+	fi
 	$(PYV) -m ipykernel install --user --name mindsense --display-name "Python (mindsense)" || true
 	@echo "Setup complete. Activate with: source $(VENV)/bin/activate"
 

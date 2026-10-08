@@ -1,0 +1,84 @@
+{
+  "generated": "2026-10-08T14:55:37+00:00",
+  "seed": 42,
+  "data_source": {
+    "real": 216247
+  },
+  "figures": [
+    "exp02_01_target_balance.png",
+    "exp02_02_age_band.png",
+    "exp02_03_gender.png",
+    "exp02_04_sleep.png",
+    "exp02_05_pressure.png",
+    "exp02_06_financial.png",
+    "exp02_07_family.png",
+    "exp02_08_work_interfere.png",
+    "exp02_09_association.png",
+    "exp02_10_mi.png",
+    "exp02_11_populations.png",
+    "exp02_12_dass_dist.png",
+    "exp02_13_dass_bands.png",
+    "exp02_14_dass_cooccur.png",
+    "exp02_15_dass_subgroups.png",
+    "exp02_16_dass_country.png",
+    "exp02_17_dass_items.png",
+    "exp02_18_text_labels.png",
+    "exp02_19_text_length.png",
+    "exp02_20_text_bigrams.png",
+    "exp02_21_text_emotion.png",
+    "exp02_22_drug_ratings.png",
+    "exp02_23_drug_sentiment.png",
+    "exp02_24_fer_counts.png",
+    "exp02_25_fer_grid.png"
+  ],
+  "n_interactive_html": 2,
+  "target": {
+    "mh_risk_rate": 0.5821,
+    "rate_by_population": {
+      "professional": 0.5052,
+      "student": 0.5855
+    },
+    "n": 29152
+  },
+  "mi_top5": {
+    "suicidal_thoughts": 0.1407,
+    "stress_pressure_score": 0.1258,
+    "financial_stress": 0.0664,
+    "age": 0.0315,
+    "work_study_hours": 0.0255
+  },
+  "dass_depression_band_share": {
+    "Extremely severe": 0.3378,
+    "Normal": 0.2216,
+    "Moderate": 0.1797,
+    "Severe": 0.1642,
+    "Mild": 0.0966
+  },
+  "dass_n_after_validity_screen": 38337,
+  "text_class_balance": {
+    "Normal": 15817,
+    "Depression": 15082,
+    "Suicidal": 10640,
+    "Anxiety": 3615,
+    "Bipolar": 2501,
+    "Stress": 2293,
+    "Personality disorder": 895
+  },
+  "drug": {
+    "n": 26832,
+    "rating_mean": 7.31,
+    "vader_rating_spearman": 0.2737
+  },
+  "fer": {
+    "n": 35887,
+    "classes": {
+      "happy": 8989,
+      "neutral": 6198,
+      "sad": 6077,
+      "fear": 5121,
+      "angry": 4953,
+      "surprise": 4002,
+      "disgust": 547
+    }
+  }
+}

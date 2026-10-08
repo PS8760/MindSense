@@ -1,0 +1,196 @@
+{
+  "generated": "2026-10-08T20:23:35",
+  "seed": 42,
+  "split_ratios": [
+    0.7,
+    0.15,
+    0.15
+  ],
+  "tables": {
+    "student_depression": {
+      "rows": 27901,
+      "cols": 20,
+      "missing_pct": 0.01,
+      "duplicate_rows": 0,
+      "data_source": {
+        "real": 27901
+      }
+    },
+    "student_depression_small": {
+      "rows": 502,
+      "cols": 13,
+      "missing_pct": 0.0,
+      "duplicate_rows": 0,
+      "data_source": {
+        "real": 502
+      }
+    },
+    "sentiment_mh": {
+      "rows": 50843,
+      "cols": 5,
+      "missing_pct": 0.0,
+      "duplicate_rows": 0,
+      "splits": {
+        "train": 35590,
+        "test": 7627,
+        "val": 7626
+      },
+      "data_source": {
+        "real": 50843
+      }
+    },
+    "dass42": {
+      "rows": 38337,
+      "cols": 55,
+      "missing_pct": 0.0,
+      "duplicate_rows": 0,
+      "splits": {
+        "train": 26835,
+        "val": 5751,
+        "test": 5751
+      },
+      "data_source": {
+        "real": 38337
+      }
+    },
+    "osmi_2014": {
+      "rows": 1251,
+      "cols": 14,
+      "missing_pct": 3.03,
+      "duplicate_rows": 8,
+      "data_source": {
+        "real": 1251
+      }
+    },
+    "osmi_2017_21": {
+      "rows": 754,
+      "cols": 16,
+      "missing_pct": 11.55,
+      "duplicate_rows": 0,
+      "data_source": {
+        "real": 754
+      }
+    },
+    "drug_reviews": {
+      "rows": 26832,
+      "cols": 11,
+      "missing_pct": 0.0,
+      "duplicate_rows": 0,
+      "splits": {
+        "train": 23286,
+        "test": 3546
+      },
+      "data_source": {
+        "real": 26832
+      }
+    },
+    "fer2013": {
+      "rows": 35887,
+      "cols": 4,
+      "missing_pct": 0.0,
+      "duplicate_rows": 0,
+      "splits": {
+        "train": 28709,
+        "test": 7178
+      },
+      "data_source": {
+        "real": 35887
+      }
+    },
+    "dreaddit": {
+      "rows": 3532,
+      "cols": 7,
+      "missing_pct": 0.0,
+      "duplicate_rows": 0,
+      "splits": {
+        "train": 2820,
+        "test": 712
+      },
+      "data_source": {
+        "real": 3532
+      }
+    },
+    "risk_harmonized": {
+      "rows": 29152,
+      "cols": 17,
+      "missing_pct": 7.2,
+      "duplicate_rows": 0,
+      "splits": {
+        "train": 20406,
+        "val": 4373,
+        "test": 4373
+      },
+      "data_source": {
+        "real": 29152
+      }
+    },
+    "external_osmi_2017": {
+      "rows": 754,
+      "cols": 16,
+      "missing_pct": 42.35,
+      "duplicate_rows": 0,
+      "data_source": {
+        "real": 754
+      }
+    },
+    "external_student_small": {
+      "rows": 502,
+      "cols": 16,
+      "missing_pct": 6.25,
+      "duplicate_rows": 0,
+      "data_source": {
+        "real": 502
+      }
+    }
+  },
+  "inventory_summary": {
+    "datasets_configured": 10,
+    "datasets_present": 10,
+    "synthetic_used": 1
+  },
+  "notes": {
+    "student_depression": [
+      "Sleep/Diet 'Others' placeholders -> NaN; sleep buckets mapped to midpoints (4/5.5/7.5/9 h).",
+      "3 rows with missing Financial Stress kept as NaN (filled at fit time, never here).",
+      "Suicidal-thoughts field retained for ablation only; excluded from the deployed model.",
+      "Near-constant Work Pressure / Job Satisfaction kept in the clean table, dropped when modeling."
+    ],
+    "osmi_2014": [
+      "Ages outside 15-100 dropped (source contains absurd outliers).",
+      "Gender free-text normalised to male/female/other (49 raw spellings observed).",
+      "work_interfere NaN -> 'Not applicable' (employees without a condition).",
+      "'treatment' is a proxy label (has ever sought treatment), not a diagnosis."
+    ],
+    "sentiment_mh": [
+      "362 null statements, 1608 duplicate statements and 230 too-short rows removed before splitting.",
+      "Text normalised: HTML unescaped, URLs/handles removed, emoji -> word tokens, lowercased.",
+      "Class imbalance retained; macro-F1 used for evaluation (Exp 5/7).",
+      "2819 statements are verbatim Dreaddit posts (the corpus is Reddit-scraped) - Exp 7 must drop overlap rows from training before evaluating on Dreaddit (text_leakage_report.json)."
+    ],
+    "dass42": [
+      "Items recoded 1-4 -> 0-3 per the Open Psychometrics codebook.",
+      "Validity screen: >=2 fake VCL words, age outside 10-100, straight-liners, test time <60 s.",
+      "Severity bands applied to the RAW 14-item sum 0-42; the DASS-21 x2 rule is not used (the two cut-off tables align once doubled - see DECISIONS.md).",
+      "Observed distribution is skewed toward severe bands: self-selected sample of people who chose to take an online depression test - not a population prevalence estimate."
+    ],
+    "drug_reviews": [
+      "Filtered to mental-health conditions (depression/anxiety/bipolar/insomnia/adhd/ocd/ptsd); 'Bipolar Disorde' typo matched by prefix.",
+      "Research-use only, no redistribution: processed table stays git-ignored; only aggregates published.",
+      "Official train/test split from the source files preserved."
+    ],
+    "dreaddit": [
+      "Official train/test split preserved; cross-split duplicate texts removed (leakage guard).",
+      "LIWC/engineering features dropped - only text + label kept for Exp 7."
+    ],
+    "risk_harmonized": [
+      "Population-asymmetric schema: students have sleep/finances/diet, professionals have workplace support; the other side is NaN by design (per-population models + pooled baseline).",
+      "Stratified 70/15/15 split on mh_risk x population, seed 42, written into the split column."
+    ],
+    "osmi_2017_shift": [
+      "External temporal-shift evaluation only (Exp 6); never mixed into training."
+    ],
+    "student_depression_small": [
+      "Tier-C external sanity check (Exp 6); never mixed into training."
+    ]
+  }
+}

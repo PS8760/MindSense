@@ -1,6 +1,8 @@
-# Data (never commit raw datasets)
+# Data (never commit raw datasets or derived tables — licences prohibit
+# redistribution for Drugs.com/Kaggle mirrors; `make data` regenerates them)
 data/raw/
 data/interim/
+data/processed/
 *.zip
 *.csv.gz
 
