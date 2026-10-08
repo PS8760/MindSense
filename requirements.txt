@@ -86,7 +86,7 @@ nbclient==0.11.0
 nest-asyncio2==1.7.4
 networkx==3.6.1
 numba==0.68.0
-numpy==2.2.6
+numpy==2.3.3
 onnxruntime==1.30.0
 opencv-python-headless==5.0.0.93
 overrides==7.7.0

@@ -27,9 +27,10 @@ Inference contract (``mindsense.inference.analyze_face``)
 * ``models/metadata.json`` registers the artifact, version and provenance.
 """
 
-from __future__ import annotations
+from __future__ import annotations  # noqa: I001
 
 import math
+import os
 import random
 import subprocess
 import time
@@ -38,6 +39,10 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+# Load-order guard: xgboost MUST be imported before torch. Both bundle OpenMP
+# runtimes, and fitting xgboost after torch is imported segfaults on macOS
+# (duplicate libomp — reproduced locally). Do not reorder.
+import xgboost  # noqa: F401, I001
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
@@ -530,6 +535,9 @@ def _fit_model(name: str, x_train: np.ndarray, y_train: np.ndarray, seed: int) -
 
     ``mlp`` returns None — it is trained separately as a torch module.
     """
+    # Constrain libomp so torch/Metal and xgboost's OpenMP do not clash on
+    # macOS (observed segfault otherwise, see DECISIONS). Respect caller-set values.
+    os.environ.setdefault("OMP_NUM_THREADS", "1")
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.linear_model import LogisticRegression
     from xgboost import XGBClassifier
