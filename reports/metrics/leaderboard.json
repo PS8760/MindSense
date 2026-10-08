@@ -1,0 +1,9 @@
+{
+  "generated": "2026-10-08T20:38:17+00:00",
+  "best_model_per_experiment": {
+    "exp03_image": "mlp",
+    "exp04_tabular": "gradient_boosting",
+    "exp06_text": "linear_svc",
+    "exp07_prognosis": "gradient_boosting"
+  }
+}

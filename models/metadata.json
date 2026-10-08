@@ -8,13 +8,14 @@
   "training": {
     "face": {
       "experiment": "exp03",
-      "date": "2026-10-08T15:38:12.482569+00:00",
-      "git": "3702bef",
+      "date": "2026-10-08T20:26:09.927966+00:00",
+      "git": "dc8e232",
       "datasets": {
         "fer2013": "real"
       },
       "non_diagnostic": true,
       "intended_use": "supplementary facial mood cue for the app; never a diagnosis",
+      "approach": "frozen MobileNetV2 embeddings + compared heads (see DECISIONS #22)",
       "input_size": [
         224,
         224
@@ -43,101 +44,326 @@
           "surprise"
         ]
       },
+      "comparison": {
+        "logreg": {
+          "fit_seconds": 35.98,
+          "val": {
+            "accuracy": 0.497,
+            "macro_precision": 0.4545,
+            "macro_recall": 0.4384,
+            "macro_f1": 0.4421,
+            "weighted_f1": 0.4883,
+            "per_class_recall": {
+              "angry": 0.3434,
+              "disgust": 0.1818,
+              "fear": 0.3,
+              "happy": 0.7271,
+              "sad": 0.3706,
+              "surprise": 0.6341,
+              "neutral": 0.5121
+            },
+            "support": {
+              "angry": 399,
+              "disgust": 44,
+              "fear": 410,
+              "happy": 722,
+              "sad": 483,
+              "surprise": 317,
+              "neutral": 496
+            },
+            "n": 2871
+          },
+          "test": {
+            "accuracy": 0.4936,
+            "macro_precision": 0.477,
+            "macro_recall": 0.4485,
+            "macro_f1": 0.4568,
+            "weighted_f1": 0.4844,
+            "per_class_recall": {
+              "angry": 0.334,
+              "disgust": 0.2973,
+              "fear": 0.2793,
+              "happy": 0.739,
+              "sad": 0.3801,
+              "surprise": 0.6209,
+              "neutral": 0.4891
+            },
+            "support": {
+              "angry": 958,
+              "disgust": 111,
+              "fear": 1024,
+              "happy": 1774,
+              "sad": 1247,
+              "surprise": 831,
+              "neutral": 1233
+            },
+            "n": 7178
+          }
+        },
+        "forest": {
+          "fit_seconds": 29.78,
+          "val": {
+            "accuracy": 0.4866,
+            "macro_precision": 0.554,
+            "macro_recall": 0.4512,
+            "macro_f1": 0.4697,
+            "weighted_f1": 0.4794,
+            "per_class_recall": {
+              "angry": 0.3208,
+              "disgust": 0.2727,
+              "fear": 0.3463,
+              "happy": 0.651,
+              "sad": 0.4265,
+              "surprise": 0.7098,
+              "neutral": 0.4315
+            },
+            "support": {
+              "angry": 399,
+              "disgust": 44,
+              "fear": 410,
+              "happy": 722,
+              "sad": 483,
+              "surprise": 317,
+              "neutral": 496
+            },
+            "n": 2871
+          },
+          "test": {
+            "accuracy": 0.4751,
+            "macro_precision": 0.5412,
+            "macro_recall": 0.4421,
+            "macro_f1": 0.4617,
+            "weighted_f1": 0.4691,
+            "per_class_recall": {
+              "angry": 0.3121,
+              "disgust": 0.2883,
+              "fear": 0.3506,
+              "happy": 0.6342,
+              "sad": 0.3929,
+              "surprise": 0.6751,
+              "neutral": 0.4412
+            },
+            "support": {
+              "angry": 958,
+              "disgust": 111,
+              "fear": 1024,
+              "happy": 1774,
+              "sad": 1247,
+              "surprise": 831,
+              "neutral": 1233
+            },
+            "n": 7178
+          }
+        },
+        "xgboost": {
+          "fit_seconds": 325.81,
+          "val": {
+            "accuracy": 0.5361,
+            "macro_precision": 0.5979,
+            "macro_recall": 0.4775,
+            "macro_f1": 0.499,
+            "weighted_f1": 0.5277,
+            "per_class_recall": {
+              "angry": 0.3634,
+              "disgust": 0.2273,
+              "fear": 0.3439,
+              "happy": 0.7632,
+              "sad": 0.4762,
+              "surprise": 0.6562,
+              "neutral": 0.5121
+            },
+            "support": {
+              "angry": 399,
+              "disgust": 44,
+              "fear": 410,
+              "happy": 722,
+              "sad": 483,
+              "surprise": 317,
+              "neutral": 496
+            },
+            "n": 2871
+          },
+          "test": {
+            "accuracy": 0.5284,
+            "macro_precision": 0.5915,
+            "macro_recall": 0.4713,
+            "macro_f1": 0.4935,
+            "weighted_f1": 0.5189,
+            "per_class_recall": {
+              "angry": 0.3351,
+              "disgust": 0.2432,
+              "fear": 0.3438,
+              "happy": 0.7745,
+              "sad": 0.4114,
+              "surprise": 0.6534,
+              "neutral": 0.5377
+            },
+            "support": {
+              "angry": 958,
+              "disgust": 111,
+              "fear": 1024,
+              "happy": 1774,
+              "sad": 1247,
+              "surprise": 831,
+              "neutral": 1233
+            },
+            "n": 7178
+          }
+        },
+        "mlp": {
+          "fit_seconds": 18.9,
+          "val": {
+            "accuracy": 0.5423,
+            "macro_precision": 0.5003,
+            "macro_recall": 0.5241,
+            "macro_f1": 0.5077,
+            "weighted_f1": 0.5386,
+            "per_class_recall": {
+              "angry": 0.416,
+              "disgust": 0.4773,
+              "fear": 0.3927,
+              "happy": 0.7133,
+              "sad": 0.3665,
+              "surprise": 0.7224,
+              "neutral": 0.5806
+            },
+            "support": {
+              "angry": 399,
+              "disgust": 44,
+              "fear": 410,
+              "happy": 722,
+              "sad": 483,
+              "surprise": 317,
+              "neutral": 496
+            },
+            "n": 2871
+          },
+          "test": {
+            "accuracy": 0.541,
+            "macro_precision": 0.5051,
+            "macro_recall": 0.5359,
+            "macro_f1": 0.5157,
+            "weighted_f1": 0.5374,
+            "per_class_recall": {
+              "angry": 0.4175,
+              "disgust": 0.5856,
+              "fear": 0.3721,
+              "happy": 0.7187,
+              "sad": 0.3857,
+              "surprise": 0.7148,
+              "neutral": 0.5572
+            },
+            "support": {
+              "angry": 958,
+              "disgust": 111,
+              "fear": 1024,
+              "happy": 1774,
+              "sad": 1247,
+              "surprise": 831,
+              "neutral": 1233
+            },
+            "n": 7178
+          }
+        }
+      },
+      "best_by_test_macro_f1": "mlp",
       "metrics": {
         "test": {
-          "accuracy": 0.0571,
-          "macro_f1": 0.0408,
+          "accuracy": 0.541,
+          "macro_precision": 0.5051,
+          "macro_recall": 0.5359,
+          "macro_f1": 0.5157,
+          "weighted_f1": 0.5374,
           "per_class_recall": {
-            "angry": 0.0,
-            "disgust": 0.0,
-            "fear": 0.0,
-            "happy": 0.2,
-            "sad": 0.2,
-            "surprise": 0.0,
-            "neutral": 0.0
+            "angry": 0.4175,
+            "disgust": 0.5856,
+            "fear": 0.3721,
+            "happy": 0.7187,
+            "sad": 0.3857,
+            "surprise": 0.7148,
+            "neutral": 0.5572
           },
           "confusion_matrix": [
             [
-              0,
-              0,
-              2,
-              1,
-              2,
-              0,
-              0
+              400,
+              23,
+              111,
+              113,
+              130,
+              42,
+              139
             ],
             [
-              0,
-              0,
-              0,
-              2,
+              16,
+              65,
               1,
-              0,
-              2
+              13,
+              5,
+              5,
+              6
             ],
             [
-              0,
-              1,
-              0,
-              0,
-              2,
-              0,
-              2
+              126,
+              24,
+              381,
+              79,
+              165,
+              113,
+              136
             ],
             [
-              1,
-              0,
-              1,
-              1,
-              1,
-              0,
-              1
+              84,
+              17,
+              71,
+              1275,
+              103,
+              58,
+              166
             ],
             [
-              0,
-              0,
-              1,
-              2,
-              1,
-              0,
-              1
+              159,
+              28,
+              153,
+              156,
+              481,
+              26,
+              244
             ],
             [
-              0,
-              0,
-              3,
-              1,
-              1,
-              0,
-              0
+              41,
+              5,
+              73,
+              43,
+              20,
+              594,
+              55
             ],
             [
-              0,
-              0,
-              2,
-              2,
-              1,
-              0,
-              0
+              77,
+              16,
+              99,
+              135,
+              168,
+              51,
+              687
             ]
           ],
           "support": {
-            "angry": 5,
-            "disgust": 5,
-            "fear": 5,
-            "happy": 5,
-            "sad": 5,
-            "surprise": 5,
-            "neutral": 5
+            "angry": 958,
+            "disgust": 111,
+            "fear": 1024,
+            "happy": 1774,
+            "sad": 1247,
+            "surprise": 831,
+            "neutral": 1233
           },
-          "n": 35
-        },
-        "val_macro_f1_best": 0.0817
+          "n": 7178
+        }
       },
       "onnx": {
         "path": "/Users/pranavghodke/Desktop/Honors_Mini_Project/models/face_emotion.onnx",
-        "size_mb": 8.49,
-        "parity_max_abs": 1.51e-06,
+        "size_mb": 10.97,
+        "parity_max_abs": 3.815e-05,
         "parity_ok": true,
         "opset": 17
       }

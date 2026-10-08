@@ -21,7 +21,7 @@ Fast checks:
 
 ```bash
 make lint      # ruff check (src app tests scripts)
-make test      # pytest (105 tests, incl. AppTest smoke of all 8 pages)
+make test      # pytest (122 tests, incl. AppTest smoke of all 8 pages)
 python scripts/smoke_app.py
 ```
 
@@ -35,6 +35,25 @@ python scripts/smoke_app.py
 | `APP_ENV` | `local` | `local \| ci \| production` |
 | `FORCE_SYNTHETIC_BANNER` | `0` | Louder synthetic-data banners in CI |
 | `GROQ_API_KEY` | — | Optional; enables Groq suggestions (offline fallback otherwise) |
+
+## Model experiments (`make train`)
+
+`make train` runs every implemented experiment; each one compares several
+model families, ranks them on validation, and scores the winner on the held-out
+test split. Winners are summarised in `reports/metrics/leaderboard.json`.
+
+| Exp | Task | Models compared | Best on test |
+| --- | --- | --- | --- |
+| 03 image | FER-2013 mood-cue classification | logistic / random-forest / XGBoost / MLP | MLP (macro-F1 0.516) → `models/face_emotion.onnx` |
+| 04 tabular | risk screen (student + professional) | logistic / RF / gradient-boosting | gradient-boosting (macro-F1 0.840) |
+| 06 text | MH-corpus screening (7 classes) | Naive-Bayes / logistic / LinearSVC | linear-SVC (macro-F1 0.686) |
+| 07 prognosis | DASS-42 subscale regression | linear / RF / gradient-boosting | gradient-boosting (RMSE 10.47) |
+
+`make train --quick` (CI) runs all four on tiny samples; `python -m
+mindsense.models.train_all --help` lists flags. The image zoo fits its
+sklearn/XGBoost heads in a **torch-free subprocess** (`mindsense.models.zoo`)
+so torch + XGBoost never share a process (macOS OpenMP/liblomp crash — see
+`docs/DECISIONS.md`).
 
 ## Theme
 

@@ -1,0 +1,38 @@
+{
+  "generated": "2026-10-08T20:40:19+00:00",
+  "seed": 42,
+  "text_column": "text_norm",
+  "vocabulary": 31,
+  "rows": {
+    "train": 30,
+    "val": 30,
+    "test": 30
+  },
+  "best_model": "naive_bayes",
+  "ranking": [
+    {
+      "model": "naive_bayes",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "weighted_f1": 1.0
+    },
+    {
+      "model": "logistic",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "weighted_f1": 1.0
+    },
+    {
+      "model": "linear_svc",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "weighted_f1": 1.0
+    }
+  ],
+  "test": {
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "weighted_f1": 1.0,
+    "n": 30
+  }
+}

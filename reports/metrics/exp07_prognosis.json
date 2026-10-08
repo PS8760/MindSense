@@ -1,0 +1,45 @@
+{
+  "generated": "2026-10-08T20:40:18+00:00",
+  "seed": 42,
+  "rows": {
+    "train": 30,
+    "val": 30,
+    "test": 30
+  },
+  "best_model": "random_forest",
+  "ranking": [
+    {
+      "model": "random_forest",
+      "rmse_mean": 5.8983,
+      "r2_mean": -0.2415,
+      "rmse_depression_score": 5.8035,
+      "rmse_anxiety_score": 6.189,
+      "rmse_stress_score": 5.7024
+    },
+    {
+      "model": "linear",
+      "rmse_mean": 6.2425,
+      "r2_mean": -0.3754,
+      "rmse_depression_score": 5.952,
+      "rmse_anxiety_score": 7.1112,
+      "rmse_stress_score": 5.6645
+    },
+    {
+      "model": "gradient_boosting",
+      "rmse_mean": 7.0197,
+      "r2_mean": -0.7598,
+      "rmse_depression_score": 6.8366,
+      "rmse_anxiety_score": 7.3934,
+      "rmse_stress_score": 6.829
+    }
+  ],
+  "test": {
+    "rmse_mean": 6.6915,
+    "rmse_by_target": {
+      "depression_score": 5.9595,
+      "anxiety_score": 5.7901,
+      "stress_score": 8.3249
+    },
+    "n": 30
+  }
+}
