@@ -17,11 +17,11 @@ from app.components import helplines, sidebar, theme  # noqa: E402
 from mindsense import inference  # noqa: E402
 from mindsense.utils.io import load_config, read_table, repo_path  # noqa: E402
 
-st.set_page_config(page_title="About & Ethics — MindSense", page_icon="⚖️", layout="wide")
+st.set_page_config(page_title="Care & safety — MindSense", page_icon="⚖️", layout="wide")
 theme.apply()
 sidebar.render_sidebar()
 
-st.title("⚖️ About, Ethics & Limitations")
+st.title("⚖️ Care & safety")
 
 # --------------------------------------------------------------------------- #
 st.subheader("What this project is")
@@ -67,7 +67,7 @@ else:
 
 config = load_config()
 st.caption(
-    "Full ranked list with links: **Lab Results → Ranked datasets** · "
+    "Full ranked list with links: **Models & data → Ranked datasets** · "
     "column definitions: `docs/DATA_DICTIONARY.md`. "
     "Row-level data is never committed (licences/ToS); only aggregates are."
 )
@@ -129,7 +129,7 @@ st.markdown(
    diagnoses; the 7-class corpus overlaps 2 819 posts with Dreaddit
    (quantified in `reports/tables/text_leakage_report.json`).
 3. **Demographic coverage** — gender beyond male/female/other and non-English
-   texts are under-represented; fairness tables (Exp 8) show where errors are
+   texts are under-represented; fairness tables show where errors are
    uneven.
 4. **Associations only** — the what-if sliders move a model's input, not a
    causal world; no interventional claims are made anywhere in the app.
@@ -161,7 +161,7 @@ st.markdown(
 - **Instruments**: PHQ-9 (Kroenke, Spitzer & Williams, 2001), GAD-7
   (Spitzer et al., 2006), DASS-42 (Lovibond & Lovibond, 1995; official items
   from UNSW, public domain), GAD-2, WHO-5.
-- **Datasets**: listed with licences in Lab Results → Ranked datasets
+- **Datasets**: listed with licences in Models & data → Ranked datasets
   (Kaggle/Opendatasoft/OpenPsychometrics/Dreaddit/Drugs.com/FER-2013 …).
 - **Libraries**: scikit-learn, XGBoost, PyTorch, transformers, SHAP, LIME,
   Plotly, Streamlit — see `requirements.txt` / `requirements-train.txt`.

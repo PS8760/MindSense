@@ -1,0 +1,146 @@
+{
+  "artifacts": {
+    "face": "face_emotion.onnx"
+  },
+  "model_versions": {
+    "face": "exp03-v1"
+  },
+  "training": {
+    "face": {
+      "experiment": "exp03",
+      "date": "2026-10-08T15:38:12.482569+00:00",
+      "git": "3702bef",
+      "datasets": {
+        "fer2013": "real"
+      },
+      "non_diagnostic": true,
+      "intended_use": "supplementary facial mood cue for the app; never a diagnosis",
+      "input_size": [
+        224,
+        224
+      ],
+      "classes": [
+        "angry",
+        "disgust",
+        "fear",
+        "happy",
+        "sad",
+        "surprise",
+        "neutral"
+      ],
+      "mood_cue_groups": {
+        "negative-affect": [
+          "angry",
+          "disgust",
+          "fear",
+          "sad"
+        ],
+        "neutral": [
+          "neutral"
+        ],
+        "positive-affect": [
+          "happy",
+          "surprise"
+        ]
+      },
+      "metrics": {
+        "test": {
+          "accuracy": 0.0571,
+          "macro_f1": 0.0408,
+          "per_class_recall": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.2,
+            "sad": 0.2,
+            "surprise": 0.0,
+            "neutral": 0.0
+          },
+          "confusion_matrix": [
+            [
+              0,
+              0,
+              2,
+              1,
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              2,
+              1,
+              0,
+              2
+            ],
+            [
+              0,
+              1,
+              0,
+              0,
+              2,
+              0,
+              2
+            ],
+            [
+              1,
+              0,
+              1,
+              1,
+              1,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              1,
+              2,
+              1,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              3,
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              2,
+              2,
+              1,
+              0,
+              0
+            ]
+          ],
+          "support": {
+            "angry": 5,
+            "disgust": 5,
+            "fear": 5,
+            "happy": 5,
+            "sad": 5,
+            "surprise": 5,
+            "neutral": 5
+          },
+          "n": 35
+        },
+        "val_macro_f1_best": 0.0817
+      },
+      "onnx": {
+        "path": "/Users/pranavghodke/Desktop/Honors_Mini_Project/models/face_emotion.onnx",
+        "size_mb": 8.49,
+        "parity_max_abs": 1.51e-06,
+        "parity_ok": true,
+        "opset": 17
+      }
+    }
+  }
+}

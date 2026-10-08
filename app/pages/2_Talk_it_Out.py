@@ -1,6 +1,7 @@
-"""Text Check-in (Exp 7 + 5): free-text signal, entities, crisis detection.
+"""Talk it out: free-text signal, entities, crisis detection.
 
 Text stays in ``st.session_state`` only — never logged, never persisted.
+Optional AI reflection sends the text only when the user presses its button.
 """
 
 from __future__ import annotations
@@ -14,18 +15,19 @@ for _p in (Path(__file__).resolve().parents[1], Path(__file__).resolve().parents
 
 import streamlit as st  # noqa: E402
 
-from app.components import fusion, sidebar, theme, widgets  # noqa: E402
+from app.components import ai, fusion, sidebar, theme, widgets  # noqa: E402
 from mindsense import inference  # noqa: E402
 
-st.set_page_config(page_title="Text Check-in — MindSense", page_icon="💬", layout="wide")
+st.set_page_config(page_title="Talk it out — MindSense", page_icon="💬", layout="wide")
 theme.apply()
 sidebar.render_sidebar()
 
-st.title("💬 Text Check-in")
-st.caption("Mental-state signal from your words (Exp 7) · clinical entities (Exp 5)")
+st.title("💬 Talk it out")
+st.caption("Mental-state signal from your words · clinical entities from a note")
 st.info(
-    "Whatever you type is analyzed **only in this browser session** — it is "
-    "never stored, logged or sent anywhere.",
+    "Whatever you type stays in **this browser session only** — never stored "
+    "or logged. It's shared with the AI assistant only if *you* press the "
+    "reflection button below.",
     icon="🔒",
 )
 
@@ -132,7 +134,7 @@ if entity_result is not None:
     else:
         widgets.entity_chips(entity_result["entities"])
         st.caption(
-            "Entity extraction (Exp 5) finds mentions of conditions, "
+            "Entity extraction finds mentions of conditions, "
             "medications and symptoms — it describes *what is written*, "
             "and is never a diagnosis of the writer."
         )
@@ -143,8 +145,40 @@ if entity_result is not None:
         )
 
 st.divider()
+
+# --------------------------------------------------------------------------- #
+# optional AI reflection (sends text only on explicit click)
+# --------------------------------------------------------------------------- #
+current_text = str(st.session_state.get("ms_text_input", "")).strip()
+st.subheader("A gentle reflection")
+st.caption(
+    "Optional — pressing the button shares **only this text** with the "
+    "Groq AI assistant (nothing is stored). Skip it if you'd rather not."
+)
+reflect = st.button(
+    "✨ Reflect on what I wrote",
+    type="primary",
+    disabled=not current_text,
+    key="ms_reflect_btn",
+)
+if reflect and current_text:
+    with st.spinner("Reading what you shared…"):
+        st.session_state["ms_reflection"] = ai.reflection(current_text)
+if st.session_state.get("ms_reflection"):
+    note = st.session_state["ms_reflection"]
+    st.markdown(note["text"])
+    st.caption(
+        "✨ AI-generated reflection (Groq · Llama) — guidance, not advice or "
+        "diagnosis."
+        if note["source"] == "groq"
+        else "📴 Offline reflection (AI unavailable right now)."
+    )
+    if st.button("Dismiss", key="ms_reflection_clear"):
+        st.session_state.pop("ms_reflection", None)
+        st.rerun()
+
 st.caption(
     "Model: TF-IDF + linear classifier over labelled mental-health text "
-    "(Exp 7, metrics in Lab Results). Crisis rules: probability threshold + "
+    "(metrics on **Models & data**). Crisis rules: probability threshold + "
     "high-precision lexicon (config/screening.crisis)."
 )

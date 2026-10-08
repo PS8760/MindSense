@@ -125,7 +125,7 @@ def risk_gauge(probability: float, tier: str) -> None:
 
 
 def contributions_chart(contributions: Sequence[Mapping[str, Any]]) -> None:
-    """Approximate feature contributions as a diverging bar chart (Exp 8)."""
+    """Approximate feature contributions as a diverging bar chart."""
     if not contributions:
         return
     items = sorted(contributions, key=lambda item: abs(float(item["contribution"])))

@@ -1,0 +1,17 @@
+# MindSense — one-command launch with Docker Compose.
+# Container port is 7860 (Hugging Face standard); map it to 8501 on the host.
+# Env comes from the optional, git-ignored .env (feature flags + GROQ_API_KEY).
+
+services:
+  mindsense:
+    build: .
+    image: mindsense
+    ports:
+      - "8501:7860"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      PORT: 7860
+      APP_ENV: production
+    restart: unless-stopped

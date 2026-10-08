@@ -55,7 +55,7 @@ _DEFAULT_ARTIFACTS = {
     "face": "face_emotion.onnx",
 }
 
-_TRAIN_HINT = "Model not trained yet — run ``make train`` (Experiments 3–7)."
+_TRAIN_HINT = "Model not trained yet — run ``make train``."
 
 #: Feature order used when metadata does not specify one (matches
 #: ``mindsense.data.harmonize.HARMONIZED_COLUMNS`` minus ids/labels).
@@ -137,11 +137,11 @@ def availability() -> dict[str, dict[str, Any]]:
     """Status of every module, for the Home page status strip and Lab Results."""
     status: dict[str, dict[str, Any]] = {}
     for key, label in (
-        ("risk", "Lifestyle risk model (Exp 6)"),
-        ("intervention", "Intervention-likelihood (Exp 4)"),
-        ("prognosis", "DASS severity prognosis (Exp 4)"),
-        ("text", "Text mental-state classifier (Exp 7)"),
-        ("face", "Face emotion cue (Exp 3)"),
+        ("risk", "Lifestyle risk model"),
+        ("intervention", "Intervention-likelihood model"),
+        ("prognosis", "DASS severity prognosis model"),
+        ("text", "Text mental-state classifier"),
+        ("face", "Face emotion cue model"),
     ):
         path = _artifact_path(key)
         status[key] = {
@@ -157,7 +157,7 @@ def availability() -> dict[str, dict[str, Any]]:
     except Exception as exc:  # pragma: no cover - depends on build order
         entities_ok, entities_detail = False, f"entity module not ready ({type(exc).__name__})"
     status["entities"] = {
-        "label": "Clinical entity extraction (Exp 5)",
+        "label": "Clinical entity extraction",
         "available": entities_ok,
         "detail": entities_detail,
         "version": _model_version("entities"),
@@ -495,7 +495,8 @@ def analyze_face(image: Any) -> dict[str, Any]:
     cfg = load_config()["image_model"]
     height, width = cfg["input_size"]
     resized = cv2.resize(image_array, (width, height))
-    blob = resized.astype("float32") / 255.0
+    rgb = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)  # model trains on RGB
+    blob = rgb.astype("float32") / 255.0  # [0, 1]; normalisation lives inside the graph
     blob = blob.transpose(2, 0, 1)[None]  # NCHW
 
     session = _face_session(str(path))

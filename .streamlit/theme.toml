@@ -1,0 +1,7 @@
+# Streamlit native theme — calm wellbeing scheme (see app/components/theme.py
+# for the layered CSS on top of this; the sidebar toggle overrides per mode).
+primaryColor = "#2E8B7A"
+backgroundColor = "#F2F7F5"
+secondaryBackgroundColor = "#EEF5F2"
+textColor = "#22333C"
+font = "sans-serif"

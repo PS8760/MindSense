@@ -1,4 +1,4 @@
-"""Population Insights (Exp 2): interactive Plotly dashboards over the
+"""Community insights: interactive Plotly dashboards over the
 processed datasets, with filters and honest data-source labelling.
 """
 
@@ -18,12 +18,15 @@ import streamlit as st  # noqa: E402
 from app.components import sidebar, theme  # noqa: E402
 from mindsense.utils.io import repo_path  # noqa: E402
 
-st.set_page_config(page_title="Population Insights — MindSense", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Community insights — MindSense", page_icon="📊", layout="wide")
 theme.apply()
 sidebar.render_sidebar()
 
-st.title("📊 Population Insights")
-st.caption("Exploratory dashboards over the harmonised datasets (Exp 2) — descriptive only, never causal.")
+st.title("📊 Community insights")
+st.caption(
+    "Exploratory dashboards over the harmonised datasets — descriptive only, "
+    "never causal."
+)
 st.info(
     "Aggregates from the training datasets. Rows tagged **synthetic** appear only "
     "where a real dataset could not be acquired (see the badge below).",
@@ -54,8 +57,7 @@ def _source_badge(df: pd.DataFrame) -> None:
 
 def _empty(name: str) -> None:
     st.warning(
-        f"``data/processed/{name}.parquet`` not found — run ``make data`` first "
-        "(Experiment 1)."
+        f"``data/processed/{name}.parquet`` not found — run ``make data`` first."
     )
 
 
@@ -267,7 +269,7 @@ else:
     st.caption(
         "Labelled mental-health statements (Kaggle sentiment corpus). Labels are "
         "dataset annotations, not diagnoses of real individuals; the corpus "
-        "contains some Dreaddit overlap documented in Lab Results."
+        "contains some Dreaddit overlap documented in Models & data."
     )
 
 st.divider()

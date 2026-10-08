@@ -1,4 +1,4 @@
-"""Face Mood Cue (Exp 3, optional): camera/upload → emotion + mood cue.
+"""Mood selfie (optional): camera/upload → emotion + mood cue.
 
 Feature-flagged with ``ENABLE_FACE=1`` (Section 8, page 5). Always shows a
 prominent non-diagnostic label; Grad-CAM overlay appears when the artifact
@@ -20,12 +20,12 @@ import streamlit as st  # noqa: E402
 from app.components import fusion, sidebar, theme, widgets  # noqa: E402
 from mindsense import inference  # noqa: E402
 
-st.set_page_config(page_title="Face Mood Cue — MindSense", page_icon="📷", layout="wide")
+st.set_page_config(page_title="Mood selfie — MindSense", page_icon="📷", layout="wide")
 theme.apply()
 sidebar.render_sidebar()
 
-st.title("📷 Face Mood Cue")
-st.caption("Optional emotion cue from a face image (Exp 3) · ONNX, runs locally")
+st.title("📷 Mood selfie")
+st.caption("Optional emotion cue from a face photo · runs locally on your machine")
 
 st.markdown(
     '<div class="ms-disclaimer"><strong>NON-DIAGNOSTIC.</strong> '
@@ -55,7 +55,7 @@ if not enabled:
     )
     st.caption(
         "The other six pages work fully without it. Trained weights also require "
-        "``make train`` (Experiment 3)."
+        "``make train``."
     )
     st.stop()
 
@@ -93,8 +93,8 @@ if image_bytes:
                 st.image(result["gradcam"], width="stretch")
             else:
                 st.caption(
-                    "Grad-CAM overlay becomes available when the Experiment 3 "
-                    "artifact includes it (see Lab Results → Image tab)."
+                    "Grad-CAM overlay becomes available when the photo model "
+                    "artifact includes it (see Models & data)."
                 )
             fusion.record(
                 "face",
@@ -104,6 +104,6 @@ if image_bytes:
 
 st.divider()
 st.caption(
-    "FER-2013 (Exp 3) — 7-class emotion recognition; per-class metrics, "
-    "subgroup fairness and Grad-CAM examples: Lab Results → Image tab."
+    "FER-2013 — 7-class emotion recognition; per-class metrics and "
+    "Grad-CAM examples on **Models & data**."
 )

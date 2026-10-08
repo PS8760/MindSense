@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from app.components import fusion, helplines, widgets
+from app.components import fusion, helplines, theme, widgets
 
 DISCLAIMER = (
     "⚠️ **Not a medical diagnosis. If you are in distress, seek help.**\n\n"
@@ -60,6 +60,18 @@ def render_sidebar() -> None:
             key="ms_region",
             help="Used by Help now, the crisis banner and the About page.",
         )
+
+        dark_now = theme.current_mode() == "Dark"
+        target = "Light" if dark_now else "Dark"
+        if st.button(
+            "☀️ Light mode" if dark_now else "🌙 Dark mode",
+            key="ms_theme_btn",
+            width="stretch",
+        ):
+            st.session_state["ms_theme"] = target
+            st.rerun()
+        if theme.current_mode() == "System":
+            st.caption("Following your device — tap the button to pick one.")
 
         used = fusion.modules_used()
         if used:

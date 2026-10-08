@@ -21,6 +21,9 @@ models/**/model.bst
 models/**/*_vectorizer.joblib
 models/**/preprocessor.joblib
 models/**/*.onnx
+# The deployed mood-cue ONNX (8.5 MB, < 10 MB LFS threshold) ships in the image
+# so a fresh clone can build Docker; torch checkpoints above stay ignored.
+!models/face_emotion.onnx
 
 # Reports binary outputs stay except curated ones
 # (figures/metrics/tables are committed for the report)

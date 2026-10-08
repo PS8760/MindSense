@@ -1,7 +1,7 @@
-"""Lab Results (Exp 1–10): saved metrics, tables, figures and model metadata.
+"""Models & data: saved metrics, tables, figures and model metadata.
 
-One tab per experiment plus the ranked dataset table (Section 5.2), source
-tags (real vs synthetic), model versions and subgroup/fairness tables.
+One tab per section plus the ranked dataset table, source tags
+(real vs synthetic), model versions and subgroup/fairness tables.
 """
 
 from __future__ import annotations
@@ -21,26 +21,27 @@ from app.components import sidebar, theme  # noqa: E402
 from mindsense import inference  # noqa: E402
 from mindsense.utils.io import load_config, load_json, read_table, repo_path  # noqa: E402
 
-st.set_page_config(page_title="Lab Results — MindSense", page_icon="🧪", layout="wide")
+st.set_page_config(page_title="Models & data — MindSense", page_icon="🧪", layout="wide")
 theme.apply()
 sidebar.render_sidebar()
 
-st.title("🧪 Lab Results")
+st.title("🧪 Models & data")
 st.caption(
     "Everything the project actually produced — metrics, tables, figures, "
-    "versions (Experiments 1–10). Nothing here is hand-written; files are "
-    "read from reports/ and models/."
+    "model versions. Nothing here is hand-written; files are read from "
+    "reports/ and models/."
 )
 
+# short human tab label per section; file globs still use expNN names.
 EXPERIMENTS = {
-    1: ("Data pipeline", "Acquisition ladder, cleaning, harmonisation, splits, data quality."),
-    2: ("EDA", "Distributions, associations, text statistics."),
-    3: ("Image diagnostic support", "CNN on FER-2013 with Grad-CAM (optional module)."),
-    4: ("Prognosis", "DASS severity stratification + compact screener selection."),
-    5: ("Entity extraction", "Clinical-style NLP entities from notes/reviews."),
-    6: ("Risk prediction", "Core tabular model on the harmonised lifestyle data."),
-    7: ("Text mining", "Mental-state classification, Dreaddit external check, drug reviews."),
-    8: ("Explainability", "SHAP/LIME examples and subgroup/fairness tables."),
+    1: ("Data pipeline", "Acquisition ladder, cleaning, harmonisation, splits, data quality.", "Data"),
+    2: ("Explore the data", "Distributions, associations, text statistics.", "Explore"),
+    3: ("Photo mood model", "CNN on FER-2013 with Grad-CAM (optional module).", "Photos"),
+    4: ("Mood screener", "DASS severity bands + a compact short screener.", "Screener"),
+    5: ("Clinical terms", "Rule+lexicon extraction of clinical-style mentions.", "Entities"),
+    6: ("Risk prediction", "Core model on the harmonised lifestyle data.", "Risk"),
+    7: ("Text mining", "Mental-state classification, Dreaddit external check, drug reviews.", "Words"),
+    8: ("Explainability", "SHAP/LIME examples and subgroup/fairness tables.", "Explainability"),
 }
 
 
@@ -73,7 +74,7 @@ def _show_table(path: Path) -> None:
 
 
 def render_experiment(number: int, title: str, description: str) -> None:
-    st.markdown(f"### Experiment {number}: {title}")
+    st.markdown(f"### {title}")
     st.caption(description)
     metrics = _glob_sorted(f"metrics/exp{number:02d}*.json")
     figures = _glob_sorted(f"figures/exp{number:02d}*.png")
@@ -82,7 +83,7 @@ def render_experiment(number: int, title: str, description: str) -> None:
     )
     if not (metrics or figures or tables):
         st.info(
-            f"No artifacts for Experiment {number} yet — run its notebook "
+            f"Nothing produced for **{title}** yet — run its notebook "
             "(`make notebooks`) or `make train` and reload."
         )
         return
@@ -102,14 +103,14 @@ def render_experiment(number: int, title: str, description: str) -> None:
 # --------------------------------------------------------------------------- #
 tab_datasets, *exp_tabs, tab_models = st.tabs(
     ["📚 Ranked datasets"]
-    + [f"Exp {n}: {t.split()[0]}" for n, (t, _) in EXPERIMENTS.items()]
+    + [tab for _n, (_t, _d, tab) in EXPERIMENTS.items()]
     + ["🤖 Models & fairness"]
 )
 
 with tab_datasets:
     st.markdown(
-        "Every dataset the project is configured to use (Section 5.2), merged "
-        "with what `scripts/download_data.py` actually found:"
+        "Every dataset MindSense is configured to use, merged with what "
+        "`scripts/download_data.py` actually found:"
     )
     config = load_config()
     inventory_path = repo_path("reports", "tables", "data_inventory.csv")
@@ -121,7 +122,6 @@ with tab_datasets:
             "key": key,
             "tier": ds["tier"],
             "population": ds.get("population", ""),
-            "experiments": " ".join(str(e) for e in ds.get("experiments", [])),
             "licence": ds.get("licence", ""),
             "source": ds.get("source_url", ""),
         }
@@ -144,10 +144,10 @@ with tab_datasets:
     st.caption(
         "Tier A = primary, B = supporting, C = optional/external-check. "
         "`data_source` is `real` or `synthetic` — synthetic appears only where "
-        "acquisition failed (acquisition ladder, Section 5.6)."
+        "acquisition failed (acquisition ladder)."
     )
 
-for number, (title, description) in EXPERIMENTS.items():
+for number, (title, description, _tab) in EXPERIMENTS.items():
     with exp_tabs[number - 1]:
         render_experiment(number, title, description)
 
@@ -181,7 +181,10 @@ with tab_models:
     ).exists() else []
     st.markdown("### Subgroup / fairness tables")
     if not fairness:
-        st.info("Fairness tables arrive with Experiment 8 (`reports/tables/*fairness*`).")
+        st.info(
+            "Fairness tables arrive once the fairness report runs "
+            "(`reports/tables/*fairness*`)."
+        )
     for path in fairness:
         _show_table(path)
 
@@ -195,4 +198,4 @@ with tab_models:
     )
 
 st.divider()
-st.caption(json.dumps({"experiments": len(EXPERIMENTS), "page": "lab_results"}, indent=None))
+st.caption(json.dumps({"sections": len(EXPERIMENTS), "page": "models_and_data"}, indent=None))

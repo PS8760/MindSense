@@ -1,0 +1,135 @@
+{
+  "experiment": "exp03",
+  "version": "exp03-v1",
+  "device": "mps",
+  "seed": 42,
+  "pretrained": true,
+  "data_sources": {
+    "real": 35887
+  },
+  "train_counts": {
+    "angry": 5,
+    "disgust": 5,
+    "fear": 5,
+    "happy": 5,
+    "sad": 5,
+    "surprise": 5,
+    "neutral": 5
+  },
+  "class_weights": {
+    "0": 1.0,
+    "1": 1.0,
+    "2": 1.0,
+    "3": 1.0,
+    "4": 1.0,
+    "5": 1.0,
+    "6": 1.0
+  },
+  "val_macro_f1_best": 0.0817,
+  "test": {
+    "accuracy": 0.0571,
+    "macro_f1": 0.0408,
+    "per_class_recall": {
+      "angry": 0.0,
+      "disgust": 0.0,
+      "fear": 0.0,
+      "happy": 0.2,
+      "sad": 0.2,
+      "surprise": 0.0,
+      "neutral": 0.0
+    },
+    "confusion_matrix": [
+      [
+        0,
+        0,
+        2,
+        1,
+        2,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        2,
+        1,
+        0,
+        2
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        2,
+        0,
+        2
+      ],
+      [
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        1,
+        2,
+        1,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        3,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        2,
+        2,
+        1,
+        0,
+        0
+      ]
+    ],
+    "support": {
+      "angry": 5,
+      "disgust": 5,
+      "fear": 5,
+      "happy": 5,
+      "sad": 5,
+      "surprise": 5,
+      "neutral": 5
+    },
+    "n": 35
+  },
+  "onnx": {
+    "path": "/Users/pranavghodke/Desktop/Honors_Mini_Project/models/face_emotion.onnx",
+    "size_mb": 8.49,
+    "parity_max_abs": 1.51e-06,
+    "parity_ok": true,
+    "opset": 17
+  },
+  "metadata": "/Users/pranavghodke/Desktop/Honors_Mini_Project/models/metadata.json",
+  "history": [
+    {
+      "stage": "head",
+      "epoch": 1,
+      "train_loss": 1.9341,
+      "train_acc": 0.1429,
+      "val_macro_f1": 0.0817,
+      "seconds": 20.3
+    }
+  ]
+}

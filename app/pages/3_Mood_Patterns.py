@@ -1,4 +1,4 @@
-"""Prognosis & What-If (Exp 4): DASS severity estimate, intervention
+"""Mood patterns: DASS severity estimate, intervention
 sliders with before/after comparison, and a session-only mood tracker.
 
 Associational-not-causal warnings are mandatory (Section 8, page 4).
@@ -22,13 +22,13 @@ from mindsense import inference  # noqa: E402
 from mindsense.data.dass import DEPRESSION_ITEMS, severity_band  # noqa: E402
 from mindsense.screening.dass import DASS_INSTRUCTION, DASS_ITEM_TEXTS  # noqa: E402
 
-st.set_page_config(page_title="Prognosis & What-If — MindSense", page_icon="🔮", layout="wide")
+st.set_page_config(page_title="Mood patterns — MindSense", page_icon="🌙", layout="wide")
 theme.apply()
 sidebar.render_sidebar()
 
-st.title("🔮 Prognosis & What-If")
+st.title("🌙 Mood patterns")
 st.caption(
-    "Depression-severity screening (Exp 4) · intervention what-if sliders · "
+    "Gentle depression-severity check · intervention what-if sliders · "
     "session mood tracker"
 )
 st.info(
@@ -51,13 +51,13 @@ use_model = bool(info["selected_items"]) and info["model_available"]
 
 if use_model:
     st.caption(
-        f"Experiment 4's compact screener: {len(info['selected_items'])} items "
-        f"selected by the prognosis pipeline (model: ready)."
+        f"Compact screener: {len(info['selected_items'])} items "
+        "chosen by the prognosis model (ready)."
     )
     item_numbers = info["selected_items"]
 else:
     st.caption(
-        "The trained compact screener (Exp 4) is not available yet — showing the "
+        "The trained compact screener isn't available yet — showing the "
         "**official DASS depression subscale** (14 items, public-domain instrument) "
         "with reference scoring instead. Run ``make train`` to enable the model "
         "estimate with confidence."
@@ -123,7 +123,7 @@ if severity:
         widgets.band_chip(severity["reference_band"])
         st.caption("Official DASS bands for the raw sum (no ×2 rescaling — see DECISIONS).")
     with col_model:
-        st.markdown("**Model estimate (Exp 4)**")
+        st.markdown("**Model estimate**")
         model = severity["model"]
         if not model.get("available"):
             widgets.unavailable(model)
@@ -288,6 +288,6 @@ else:
 
 st.divider()
 st.caption(
-    "Exp 4 prognosis details, item selection rationale and metrics: "
-    "Lab Results → Prognosis tab (once trained)."
+    "Prognosis details, item-selection rationale and metrics: "
+    "**Models & data** (once trained)."
 )

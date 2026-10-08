@@ -9,6 +9,9 @@ __pycache__
 .ipynb_checkpoints
 data/raw
 data/interim
+data
+models/face_emotion/checkpoint.pt
+models/**/*.pt
 notebooks
 docs
 reports/figures/*.pdf

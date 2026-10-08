@@ -1,4 +1,4 @@
-"""MindSense — Home page (Section 8, page 1).
+"""MindSense — calm, customer-facing home page.
 
 Entry point for ``streamlit run app/Home.py`` and for the AppTest smoke.
 """
@@ -14,111 +14,136 @@ for _p in (Path(__file__).resolve().parents[1], Path(__file__).resolve().parents
 
 import streamlit as st  # noqa: E402
 
-from app.components import fusion, sidebar, theme, widgets  # noqa: E402
-from mindsense import inference  # noqa: E402
+from app.components import fusion, helplines, nav, sidebar, theme, widgets  # noqa: E402
 
 st.set_page_config(
-    page_title="MindSense — Early, explainable mental-wellness screening",
-    page_icon="🧠",
+    page_title="MindSense — a calmer way to check in with yourself",
+    page_icon="🌿",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 theme.apply()
 sidebar.render_sidebar()
 
-st.title("🧠 MindSense")
-st.caption("*Early, explainable mental-wellness screening.*")
-
-st.markdown(
-    """
-MindSense is an **educational screening aid** that turns everyday inputs —
-lifestyle, questionnaire answers, free text — into **transparent, explainable**
-signals about mental-wellness risk. Every prediction comes with its confidence,
-the factors behind it, and honest limits.
-
-It is **not a diagnosis**, stores **nothing**, and is designed to start a
-better conversation with a real professional — not replace one.
-"""
+# --------------------------------------------------------------------------- #
+# hero
+# --------------------------------------------------------------------------- #
+theme.hero(
+    "A calmer way to check in with yourself.",
+    "Two quiet minutes. A few honest questions. Clear, gentle feedback you "
+    "can actually act on — private by design, with a little AI kindness at "
+    "the end.",
+    gradient_word="calmer",
 )
+
+cta1, cta2, _pad = st.columns([1.2, 1.2, 2])
+with cta1:
+    nav.page_link("pages/1_Check_In.py", label="Start your check-in", icon="📝")
+with cta2:
+    nav.page_link("pages/2_Talk_it_Out.py", label="Talk it out instead", icon="💬")
 
 if fusion.crisis_flag():
     widgets.crisis_banner(fusion.crisis_flag()["reasons"])
 
 # --------------------------------------------------------------------------- #
-# how it works
+# three promise cards
 # --------------------------------------------------------------------------- #
-st.subheader("How it works")
-col1, col2, col3 = st.columns(3, gap="large")
-with col1:
-    st.markdown("### 1️⃣ Share a little")
+cards = st.columns(3, gap="medium")
+with cards[0]:
     st.markdown(
-        "Answer a short lifestyle form, a standard questionnaire (PHQ-9/GAD-7), "
-        "or paste how you've been feeling. Optionally use the face mood cue."
+        theme.card(
+            "Fast",
+            "About 2 minutes",
+            "A short lifestyle form plus two standard questionnaires "
+            "(PHQ-9 &amp; GAD-7) — the same free instruments clinics use.",
+            icon="⏳",
+        ),
+        unsafe_allow_html=True,
     )
-with col2:
-    st.markdown("### 2️⃣ Get explainable signals")
+with cards[1]:
     st.markdown(
-        "Models estimate risk, severity bands and text signals — each with its "
-        "confidence, the factors that pushed it, and plain-language explanations."
+        theme.card(
+            "Private",
+            "Nothing is stored",
+            "No accounts, no logging. Answers live only in this tab and vanish "
+            "when you close it. AI suggestions see numbers, never your identity.",
+            icon="🔒",
+        ),
+        unsafe_allow_html=True,
     )
-with col3:
-    st.markdown("### 3️⃣ Decide your next step")
+with cards[2]:
     st.markdown(
-        "Use the tailored next steps: self-care, a check-in with someone you "
-        "trust, or professional support — with crisis help always one click away."
+        theme.card(
+            "Kind",
+            "Gentle, useful feedback",
+            "Plain-language results, honest gaps, small suggested steps — and "
+            "real helplines one tap away, always.",
+            icon="🌿",
+        ),
+        unsafe_allow_html=True,
     )
 
-# --------------------------------------------------------------------------- #
-# privacy
-# --------------------------------------------------------------------------- #
-st.subheader("Privacy")
-st.markdown(
-    """
-- **Nothing is stored.** No accounts, no server-side logging, no cookies.
-- Your inputs live only in this browser session and vanish when you close the tab.
-- The app runs locally (or in your own container) — your data never leaves the machine.
-- Datasets used for training are never shown row-by-row (licence terms respected).
-"""
-)
+st.write("")
 
 # --------------------------------------------------------------------------- #
-# module status
+# quick mood log (session-only, feeds the Mood patterns page)
 # --------------------------------------------------------------------------- #
-st.subheader("Module status")
-status = inference.availability()
-cols = st.columns(min(5, len(status)))
-for i, info in enumerate(status.values()):
-    with cols[i % len(cols)]:
-        icon = "✅" if info["available"] else "⏳"
-        st.markdown(f"**{icon} {info['label']}**")
-        st.caption(info["detail"])
-        if info["available"]:
-            st.caption(f"version: `{info['version']}`")
+mood_log: list[int] = st.session_state.setdefault("ms_mood_log", [])
+log_box = st.container(border=True)
+with log_box:
+    st.markdown("### 🌤️ One-second mood check")
+    st.caption("No form, no score — just a tap. Stored only in this tab.")
+    mood_cols = st.columns([3, 1])
+    with mood_cols[0]:
+        mood = st.select_slider(
+            "Right now I feel…",
+            options=[1, 2, 3, 4, 5],
+            value=3,
+            format_func=lambda v: {
+                1: "😞 low", 2: "🙁 unsettled", 3: "😐 steady",
+                4: "🙂 good", 5: "😄 bright",
+            }[v],
+            key="ms_home_mood",
+        )
+    with mood_cols[1]:
+        if st.button("Log it", type="primary", width="stretch", key="ms_home_mood_btn"):
+            mood_log.append(int(mood))
+            st.toast("Noted — thank you for checking in 💚")
+    if mood_log:
+        st.caption(
+            f"{len(mood_log)} mood point(s) this session · see the trend on "
+            "**Mood patterns**."
+        )
+
+st.write("")
 
 # --------------------------------------------------------------------------- #
-# session fusion summary
+# safety strip
+# --------------------------------------------------------------------------- #
+safety = st.container(border=True)
+with safety:
+    st.markdown("### 🆘 Need help right now?")
+    st.caption(
+        "If you ever feel unsafe or at risk, don't wait — talk to someone "
+        "today. Verified helplines are one click away."
+    )
+    if st.button("🆘 Help now", type="primary", key="ms_home_help"):
+        st.session_state["ms_help_open"] = True
+        st.rerun()
+    helpline_box, _ = st.columns([4, 1])
+    with helpline_box:
+        helplines.render_lines()
+
+# --------------------------------------------------------------------------- #
+# session recap
 # --------------------------------------------------------------------------- #
 if len(fusion.modules_used()) > 1:
     st.subheader("Your session so far")
     fusion.render()
 
-# --------------------------------------------------------------------------- #
-# quick links
-# --------------------------------------------------------------------------- #
-st.subheader("Start")
-links = st.columns(3)
-with links[0]:
-    st.page_link("pages/1_Risk_Assessment.py", label="Risk Assessment", icon="📝")
-    st.page_link("pages/2_Text_Check_in.py", label="Text Check-in", icon="💬")
-with links[1]:
-    st.page_link("pages/3_Prognosis_What_If.py", label="Prognosis & What-If", icon="🔮")
-    st.page_link("pages/5_Population_Insights.py", label="Population Insights", icon="📊")
-with links[2]:
-    st.page_link("pages/6_Lab_Results.py", label="Lab Results", icon="🧪")
-    st.page_link("pages/7_About_Ethics.py", label="About & Ethics", icon="⚖️")
-
+st.write("")
 st.divider()
 st.caption(
-    "MindSense · Honors Lab (AI & ML in Healthcare) mini project · "
-    "datasets and methods documented in the Lab Results and About pages."
+    "MindSense · educational screening aid · not a medical diagnosis · "
+    "methods & sources on **Care & safety** and **Models & data**."
 )

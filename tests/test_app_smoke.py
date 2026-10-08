@@ -30,3 +30,28 @@ def test_inference_returns_available_flag_not_raise():
     assert result["message"]
     status = inference.availability()
     assert status["risk"]["available"] is False
+
+
+def test_check_in_submit_shows_results_offline():
+    from app.components import ai
+
+    original = ai._cached_suggestions
+
+    def _offline(*_args, **_kwargs):
+        raise RuntimeError("offline for test")
+
+    ai._cached_suggestions = _offline
+    try:
+        at = AppTest.from_file(str(REPO / "app" / "pages" / "1_Check_In.py"), default_timeout=90)
+        at.run()
+        assert not at.exception
+        buttons = at.button
+        submit = [b for b in buttons if b.label == "See my results"]
+        assert submit, "submit button should exist"
+        submit[0].click()
+        at.run()
+        assert not at.exception, f"check-in flow raised {at.exception!r}"
+        assert any(s.value == "What stands out" for s in at.subheader)
+        assert "Offline suggestions" in " ".join(c.value for c in at.caption)
+    finally:
+        ai._cached_suggestions = original

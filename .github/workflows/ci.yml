@@ -37,3 +37,38 @@ jobs:
         env:
           MINDSENSE_SYNTHETIC: "1"
         run: bash scripts/notebook_smoke.sh
+
+  docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          load: true
+          tags: mindsense:ci
+          cache-from: type=gha,scope=mindsense
+          cache-to: type=gha,scope=mindsense,mode=max
+
+      - name: Report image size
+        run: docker images mindsense:ci --format "{{.Repository}}:{{.Tag}} {{.Size}} ({{.ID}})"
+
+      - name: Run container and probe health + page
+        run: |
+          docker run --rm -d --name mindsense -p 8501:7860 mindsense:ci
+          for i in $(seq 1 45); do
+            if curl -fsS http://localhost:8501/_stcore/health >/dev/null; then
+              echo "health ok (try $i)"
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS -o /dev/null -w "page HTTP %{http_code}\n" http://localhost:8501
+          docker stop mindsense

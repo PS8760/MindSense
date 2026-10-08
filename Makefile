@@ -48,7 +48,10 @@ app: ## Launch the Streamlit app locally
 
 docker: ## Build and run the Docker image
 	docker build -t mindsense .
-	docker run --rm -p 8501:8501 mindsense
+	docker run --rm -p 8501:7860 \
+		-e PORT=7860 \
+		-e GROQ_API_KEY="$${GROQ_API_KEY}" \
+		mindsense
 
 smoke: ## Fast CI-style check: lint + tests (no heavy training)
 	$(RUFF) check src app tests scripts

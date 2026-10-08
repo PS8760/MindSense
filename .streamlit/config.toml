@@ -1,0 +1,16 @@
+# MindSense Streamlit runtime defaults.
+# Overridable at deploy time via the PORT env var (the Docker entrypoint passes
+# --server.port=${PORT}) or command-line flags.
+
+[server]
+address = "0.0.0.0"
+headless = true
+port = 8501
+maxUploadSize = 10
+enableXsrfProtection = true
+
+[client]
+showErrorDetails = false
+
+[browser]
+gatherUsageStats = false
