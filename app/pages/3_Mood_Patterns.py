@@ -27,10 +27,7 @@ theme.apply()
 sidebar.render_sidebar()
 
 st.title("🌙 Mood patterns")
-st.caption(
-    "Gentle depression-severity check · intervention what-if sliders · "
-    "session mood tracker"
-)
+st.caption("Gentle depression-severity check · intervention what-if sliders · session mood tracker")
 st.info(
     "Everything here is **associational, not causal** — sliders show how an "
     "estimate changes with different inputs, not what will happen if you "
@@ -74,7 +71,9 @@ for number in item_numbers:
         options=[0, 1, 2, 3],
         value=0,
         key=key,
-        format_func=lambda v: f"{v} — {['did not apply', 'some degree', 'considerable', 'very much'][v]}",
+        format_func=lambda v: (
+            f"{v} — {['did not apply', 'some degree', 'considerable', 'very much'][v]}"
+        ),
     )
     answers[number] = int(value)
 
@@ -166,14 +165,22 @@ if echo:
 
 s1, s2, s3 = st.columns(3)
 with s1:
-    wi_stress = st.slider("What-if: stress/pressure", 0.0, 5.0, default_profile["stress_pressure_score"], 0.5)
+    wi_stress = st.slider(
+        "What-if: stress/pressure", 0.0, 5.0, default_profile["stress_pressure_score"], 0.5
+    )
     wi_sleep = st.slider("What-if: sleep (hours)", 3.0, 12.0, default_profile["sleep_hours"], 0.5)
 with s2:
-    wi_hours = st.slider("What-if: study/work hours/day", 0.0, 13.0, default_profile["work_study_hours"], 0.5)
-    wi_financial = st.slider("What-if: financial stress", 0.0, 5.0, default_profile["financial_stress"], 0.5)
+    wi_hours = st.slider(
+        "What-if: study/work hours/day", 0.0, 13.0, default_profile["work_study_hours"], 0.5
+    )
+    wi_financial = st.slider(
+        "What-if: financial stress", 0.0, 5.0, default_profile["financial_stress"], 0.5
+    )
 with s3:
     wi_diet = st.select_slider(
-        "What-if: diet quality", options=[0.0, 1.0, 2.0], value=default_profile["diet_quality"],
+        "What-if: diet quality",
+        options=[0.0, 1.0, 2.0],
+        value=default_profile["diet_quality"],
         format_func=lambda v: {0.0: "Unhealthy", 1.0: "Moderate", 2.0: "Healthy"}[v],
     )
     wi_population = st.radio(
@@ -240,8 +247,7 @@ if whatif:
         st.plotly_chart(fig, width="stretch")
         delta = after["likelihood"] - before["likelihood"]
         st.markdown(
-            f"**Change:** {delta:+.0%} "
-            f"({before['likelihood']:.0%} → {after['likelihood']:.0%})"
+            f"**Change:** {delta:+.0%} ({before['likelihood']:.0%} → {after['likelihood']:.0%})"
         )
         st.warning(
             "**Associational, not causal.** The model was trained on observational "
@@ -261,9 +267,7 @@ st.divider()
 # (c) session-only mood tracker
 # --------------------------------------------------------------------------- #
 st.subheader("c · Mood tracker (session only)")
-st.caption(
-    "Optional log kept in this browser session only — close the tab and it's gone."
-)
+st.caption("Optional log kept in this browser session only — close the tab and it's gone.")
 
 mood_log: list[int] = st.session_state.setdefault("ms_mood_log", [])
 mc1, mc2, mc3 = st.columns([2, 1, 1])
@@ -271,7 +275,13 @@ new_mood = mc1.select_slider(
     "How do you feel right now?",
     options=[1, 2, 3, 4, 5],
     value=3,
-    format_func=lambda v: {1: "😞 very low", 2: "🙁 low", 3: "😐 okay", 4: "🙂 good", 5: "😄 great"}[v],
+    format_func=lambda v: {
+        1: "😞 very low",
+        2: "🙁 low",
+        3: "😐 okay",
+        4: "🙂 good",
+        5: "😄 great",
+    }[v],
     key="ms_mood_value",
 )
 if mc2.button("Log mood", type="primary"):
@@ -288,6 +298,5 @@ else:
 
 st.divider()
 st.caption(
-    "Prognosis details, item-selection rationale and metrics: "
-    "**Models & data** (once trained)."
+    "Prognosis details, item-selection rationale and metrics: **Models & data** (once trained)."
 )

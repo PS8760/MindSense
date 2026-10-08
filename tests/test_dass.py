@@ -76,8 +76,7 @@ def test_validity_mask_excludes_each_bad_case():
     bad_age = _mini_frame(age=101)
     bad_straight = _mini_frame(**dict.fromkeys(ITEM_COLS, 2))
     bad_fast = _mini_frame(testelapse=30)
-    frame = pd.concat([valid, bad_fake, bad_age, bad_straight, bad_fast],
-                      ignore_index=True)
+    frame = pd.concat([valid, bad_fake, bad_age, bad_straight, bad_fast], ignore_index=True)
     mask = dass.validity_mask(dass.recode_items(frame))
     assert mask.tolist() == [True, False, False, False, False]
 
@@ -87,7 +86,7 @@ def test_score_frame_end_to_end():
         [
             _mini_frame(),
             _mini_frame(VCL6=1, VCL9=1, VCL12=1),  # fake words -> dropped
-            _mini_frame(age=101),                  # impossible age -> dropped
+            _mini_frame(age=101),  # impossible age -> dropped
         ],
         ignore_index=True,
     )

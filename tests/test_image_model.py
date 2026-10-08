@@ -40,7 +40,15 @@ def _patch_config(monkeypatch: pytest.MonkeyPatch) -> None:
         lambda: {
             "image_model": {
                 "input_size": [48, 48],
-                "emotion_classes": ["angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"],
+                "emotion_classes": [
+                    "angry",
+                    "disgust",
+                    "fear",
+                    "happy",
+                    "sad",
+                    "surprise",
+                    "neutral",
+                ],
                 "mood_cue_groups": {
                     "negative-affect": ["angry", "disgust", "fear", "sad"],
                     "neutral": ["neutral"],

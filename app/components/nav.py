@@ -12,7 +12,9 @@ import streamlit as st
 from streamlit.errors import StreamlitPageNotFoundError
 
 
-def page_link(page: str, *, label: str | None = None, icon: str = "", disabled: bool = False) -> None:
+def page_link(
+    page: str, *, label: str | None = None, icon: str = "", disabled: bool = False
+) -> None:
     try:
         st.page_link(page, label=label, icon=icon, disabled=disabled)
     except StreamlitPageNotFoundError:

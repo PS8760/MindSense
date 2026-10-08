@@ -102,8 +102,6 @@ def questionnaire_crisis(item9: int) -> dict[str, Any]:
     triggered = int(item9) > 0
     return {
         "triggered": triggered,
-        "reasons": ["PHQ-9 item 9 (self-harm thoughts) endorsed"]
-        if triggered
-        else [],
+        "reasons": ["PHQ-9 item 9 (self-harm thoughts) endorsed"] if triggered else [],
         "item9": int(item9),
     }

@@ -29,25 +29,24 @@ Inference contract (``mindsense.inference.analyze_face``)
 
 from __future__ import annotations  # noqa: I001
 
+import json
 import math
-import os
 import random
 import subprocess
+import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
-# Load-order guard: xgboost MUST be imported before torch. Both bundle OpenMP
-# runtimes, and fitting xgboost after torch is imported segfaults on macOS
-# (duplicate libomp — reproduced locally). Do not reorder.
-import xgboost  # noqa: F401, I001
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 from mindsense import GLOBAL_SEED
+from mindsense.models.metrics import classification_metrics
 from mindsense.utils.io import ensure_dir, load_config, load_json, repo_path, save_json
 from mindsense.utils.logging import get_logger
 
@@ -314,40 +313,6 @@ def predict_split(
     return np.concatenate(preds), np.concatenate(labels)
 
 
-def classification_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict[str, Any]:
-    """Accuracy, macro/micro precision, macro recall, F1 variants + per-class support."""
-    from sklearn.metrics import (
-        accuracy_score,
-        confusion_matrix,
-        f1_score,
-        precision_score,
-        recall_score,
-    )
-
-    classes = emotion_classes()
-    macro = {"average": "macro", "zero_division": 0}
-    return {
-        "accuracy": round(float(accuracy_score(y_true, y_pred)), 4),
-        "macro_precision": round(float(precision_score(y_true, y_pred, **macro)), 4),
-        "macro_recall": round(float(recall_score(y_true, y_pred, **macro)), 4),
-        "macro_f1": round(float(f1_score(y_true, y_pred, **macro)), 4),
-        "weighted_f1": round(
-            float(f1_score(y_true, y_pred, average="weighted", zero_division=0)), 4
-        ),
-        "per_class_recall": {
-            cls: round(float(r), 4)
-            for cls, r in zip(
-                classes,
-                recall_score(y_true, y_pred, average=None, labels=range(len(classes)), zero_division=0),
-                strict=True,
-            )
-        },
-        "confusion_matrix": confusion_matrix(y_true, y_pred, labels=range(len(classes))).tolist(),
-        "support": {cls: int((y_true == i).sum()) for i, cls in enumerate(classes)},
-        "n": int(len(y_true)),
-    }
-
-
 # --------------------------------------------------------------------------- #
 # Embedding extraction (the expensive, one-time, forward-only pass)
 # --------------------------------------------------------------------------- #
@@ -530,41 +495,6 @@ def register_face_artifact(
 # --------------------------------------------------------------------------- #
 # Model comparison on shared embeddings
 # --------------------------------------------------------------------------- #
-def _fit_model(name: str, x_train: np.ndarray, y_train: np.ndarray, seed: int) -> tuple[Any, float]:
-    """Fit one zoo model on embeddings; returns (estimator or None, fit seconds).
-
-    ``mlp`` returns None — it is trained separately as a torch module.
-    """
-    # Constrain libomp so torch/Metal and xgboost's OpenMP do not clash on
-    # macOS (observed segfault otherwise, see DECISIONS). Respect caller-set values.
-    os.environ.setdefault("OMP_NUM_THREADS", "1")
-    from sklearn.ensemble import RandomForestClassifier
-    from sklearn.linear_model import LogisticRegression
-    from xgboost import XGBClassifier
-
-    t0 = time.perf_counter()
-    if name == "logreg":
-        model = LogisticRegression(
-            solver="lbfgs", max_iter=2000, C=1.0, random_state=seed
-        )
-    elif name == "forest":
-        model = RandomForestClassifier(
-            n_estimators=200, random_state=seed, n_jobs=-1, class_weight="balanced"
-        )
-    elif name == "xgboost":
-        model = XGBClassifier(
-            n_estimators=300, learning_rate=0.1, max_depth=6, subsample=0.8,
-            colsample_bytree=0.8, tree_method="hist", n_jobs=1, random_state=seed,
-        )
-    else:  # pragma: no cover - unreachable
-        raise ValueError(f"unknown zoo model {name}")
-    model.fit(x_train, y_train)
-    return model, time.perf_counter() - t0
-
-
-def _predict_array(estimator: Any, x: np.ndarray) -> np.ndarray:
-    return np.asarray(estimator.predict(x))
-
 def _train_mlp_head(
     model: nn.Module, frames: dict[str, dict[str, np.ndarray]], *, epochs: int, batch_size: int, seed: int
 ) -> list[dict[str, Any]]:
@@ -612,35 +542,54 @@ def compare_models(
 ) -> tuple[dict[str, dict[str, Any]], Any | None, list[dict[str, Any]] | None]:
     """Fit the zoo on shared embeddings and score each on val + test.
 
+    sklearn/xgboost heads run in a fresh, **torch-free** subprocess
+    (``mindsense.models.zoo``): their bundled OpenMP runtimes segfault or hang
+    in a process that has imported torch (macOS, reproduced). The MLP head is
+    trained in-process with torch (stable).
+
     Returns ``(comparison, best_mlp_or_none, mlp_history)``. ``best_mlp`` is
     None unless ``"mlp"`` is in ``models``.
     """
-    x_train, y_train = frames["train"]["emb"], frames["train"]["y"]
+    classes = emotion_classes()
     comparison: dict[str, dict[str, Any]] = {}
     zoo = [n for n in models if n != "mlp"]
-    for name in zoo:
-        estimator, fit_s = _fit_model(name, x_train, y_train, seed)
-        pred_val = _predict_array(estimator, frames["val"]["emb"])
-        pred_test = _predict_array(estimator, frames["test"]["emb"])
-        comparison[name] = {
-            "fit_seconds": round(fit_s, 2),
-            "val": classification_metrics(frames["val"]["y"], pred_val),
-            "test": classification_metrics(frames["test"]["y"], pred_test),
-        }
-        log.info(
-            "compare %-8s val acc %.3f macro-F1 %.3f | test acc %.3f macro-F1 %.3f (%.1fs)",
-            name,
-            comparison[name]["val"]["accuracy"],
-            comparison[name]["val"]["macro_f1"],
-            comparison[name]["test"]["accuracy"],
-            comparison[name]["test"]["macro_f1"],
-            fit_s,
-        )
+    if zoo:
+        with tempfile.TemporaryDirectory() as td:
+            frames_path = Path(td) / "frames.npz"
+            np.savez(
+                frames_path,
+                **{
+                    f"{split}_{field}": np.asarray(frames[split][field])
+                    for split in ("train", "val", "test")
+                    for field in ("emb", "y")
+                },
+            )
+            out_path = Path(td) / "zoo.json"
+            proc = subprocess.run(
+                [sys.executable, "-m", "mindsense.models.zoo", str(frames_path), str(out_path)],
+                capture_output=True,
+                text=True,
+            )
+            if proc.returncode != 0:
+                raise RuntimeError(
+                    f"zoo subprocess exited {proc.returncode}; stderr:\n{proc.stderr[-2000:]}"
+                )
+            comparison.update(json.loads(out_path.read_text()))
+        for name, entry in comparison.items():
+            log.info(
+                "compare %-8s val acc %.3f macro-F1 %.3f | test acc %.3f macro-F1 %.3f (%.1fs)",
+                name,
+                entry["val"]["accuracy"],
+                entry["val"]["macro_f1"],
+                entry["test"]["accuracy"],
+                entry["test"]["macro_f1"],
+                entry["fit_seconds"],
+            )
 
     best_mlp = None
     mlp_history: list[dict[str, Any]] | None = None
     if "mlp" in models:
-        best_mlp = EmbeddingMLP(EMBED_DIM, len(emotion_classes()))
+        best_mlp = EmbeddingMLP(EMBED_DIM, len(classes))
         mlp_history = _train_mlp_head(
             best_mlp, frames, epochs=mlp_epochs, batch_size=mlp_batch_size, seed=seed
         )
@@ -650,8 +599,8 @@ def compare_models(
             test_pred = best_mlp(torch.from_numpy(frames["test"]["emb"])).argmax(1).numpy()
         comparison["mlp"] = {
             "fit_seconds": round(sum(e["seconds"] for e in mlp_history), 2),
-            "val": classification_metrics(frames["val"]["y"], val_pred),
-            "test": classification_metrics(frames["test"]["y"], test_pred),
+            "val": classification_metrics(frames["val"]["y"], val_pred, classes),
+            "test": classification_metrics(frames["test"]["y"], test_pred, classes),
         }
         log.info(
             "compare %-8s val acc %.3f macro-F1 %.3f | test acc %.3f macro-F1 %.3f",

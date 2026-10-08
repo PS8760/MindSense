@@ -111,9 +111,7 @@ if result is not None:
             tone = "crisis"
         else:
             tone = "warn" if crisis.get("max_suicidal_probability") else "info"
-        top = (result.get("probabilities") or {}).get(
-            result.get("top_class", ""), None
-        )
+        top = (result.get("probabilities") or {}).get(result.get("top_class", ""), None)
         summary = (
             f"signal `{result.get('top_class', 'n/a')}`"
             + (f" ({top:.0%})" if top is not None else "")
@@ -168,8 +166,7 @@ if st.session_state.get("ms_reflection"):
     note = st.session_state["ms_reflection"]
     st.markdown(note["text"])
     st.caption(
-        "✨ AI-generated reflection (Groq · Llama) — guidance, not advice or "
-        "diagnosis."
+        "✨ AI-generated reflection (Groq · Llama) — guidance, not advice or diagnosis."
         if note["source"] == "groq"
         else "📴 Offline reflection (AI unavailable right now)."
     )

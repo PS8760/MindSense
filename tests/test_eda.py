@@ -16,6 +16,7 @@ from mindsense import eda
 # age bands
 # --------------------------------------------------------------------------- #
 
+
 @pytest.mark.parametrize(
     ("age", "band"),
     [
@@ -47,6 +48,7 @@ def test_add_age_band_adds_column_and_keeps_index() -> None:
 # --------------------------------------------------------------------------- #
 # association measures
 # --------------------------------------------------------------------------- #
+
 
 def test_cramers_v_perfect_dependence_and_independence() -> None:
     x = pd.Series(["a", "a", "b", "b"])
@@ -106,6 +108,7 @@ def test_mutual_information_ranking_orders_informative_feature_first() -> None:
 # text helpers
 # --------------------------------------------------------------------------- #
 
+
 def test_top_ngrams_per_class_stopwords_filtered() -> None:
     texts = pd.Series(["hopeless empty cry"] * 6 + ["happy joyful love the on"] * 6)
     labels = pd.Series(["low"] * 6 + ["high"] * 6)
@@ -118,7 +121,12 @@ def test_top_ngrams_per_class_stopwords_filtered() -> None:
 
 def test_emotion_lexicon_shape() -> None:
     assert set(eda.EMOTION_LEXICON) == {
-        "joy", "sadness", "fear", "anger", "trust", "anticipation",
+        "joy",
+        "sadness",
+        "fear",
+        "anger",
+        "trust",
+        "anticipation",
     }
     assert all(len(stems) >= 8 for stems in eda.EMOTION_LEXICON.values())
 
@@ -153,9 +161,7 @@ def test_save_plotly_html_writes_file(tmp_path, monkeypatch) -> None:
 
     from mindsense.utils import io as mindsense_io
 
-    monkeypatch.setattr(
-        mindsense_io, "repo_path", lambda *parts: tmp_path.joinpath(*parts)
-    )
+    monkeypatch.setattr(mindsense_io, "repo_path", lambda *parts: tmp_path.joinpath(*parts))
     fig = go.Figure(data=go.Bar(x=[1, 2], y=[3, 4]))
     out = eda.save_plotly_html(fig, "unit_test_fig")
     assert out.exists()

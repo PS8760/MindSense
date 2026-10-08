@@ -133,54 +133,122 @@ def compute_gaps(features: dict[str, Any], quiz: dict[str, Any] | None) -> list[
 
     sleep = num("sleep_hours")
     if sleep is not None and sleep < 6.5:
-        add("🌙", "Sleep is running low", f"You're averaging about {sleep:g}h — small earlier nights can steady mood and focus.")
+        add(
+            "🌙",
+            "Sleep is running low",
+            f"You're averaging about {sleep:g}h — small earlier nights can steady mood and focus.",
+        )
     elif sleep is not None and sleep > 9.5:
-        add("😴", "Extra-long sleep", f"About {sleep:g}h nightly can sometimes signal low mood too — worth noticing if it lasts.")
+        add(
+            "😴",
+            "Extra-long sleep",
+            f"About {sleep:g}h nightly can sometimes signal low mood too — worth noticing if it lasts.",
+        )
 
     stress = num("stress_pressure_score")
     if stress is not None and stress >= 4:
-        add("🌊", "Pressure is high", "Your stress rating is near the top of the scale — that takes a real toll over time.")
+        add(
+            "🌊",
+            "Pressure is high",
+            "Your stress rating is near the top of the scale — that takes a real toll over time.",
+        )
 
     if features.get("population") == "student":
         hours = num("work_study_hours")
         if hours is not None and hours >= 10:
-            add("📚", "Very long days", f"About {hours:g}h of study/work daily leaves little room to recover.")
+            add(
+                "📚",
+                "Very long days",
+                f"About {hours:g}h of study/work daily leaves little room to recover.",
+            )
         satisfaction = num("satisfaction_score")
         if satisfaction is not None and satisfaction <= 1:
-            add("🧭", "Low satisfaction", "You're rating satisfaction near zero — a good signal to reassess load or expectations.")
+            add(
+                "🧭",
+                "Low satisfaction",
+                "You're rating satisfaction near zero — a good signal to reassess load or expectations.",
+            )
         financial = num("financial_stress")
         if financial is not None and financial >= 4:
-            add("💼", "Money pressure", "Financial stress is a common amplifier of sleep and mood strain.")
+            add(
+                "💼",
+                "Money pressure",
+                "Financial stress is a common amplifier of sleep and mood strain.",
+            )
         diet = num("diet_quality")
         if diet is not None and diet == 0:
-            add("🥗", "Eating habits", "Rough eating routines can quietly worsen energy and mood — small swaps count.")
+            add(
+                "🥗",
+                "Eating habits",
+                "Rough eating routines can quietly worsen energy and mood — small swaps count.",
+            )
     else:
         support = num("support_available")
         if support is not None and support == 0:
-            add("🏢", "Little workplace support", "You reported no mental-health support at work — check if an EAP or HR channel exists.")
+            add(
+                "🏢",
+                "Little workplace support",
+                "You reported no mental-health support at work — check if an EAP or HR channel exists.",
+            )
         elif support is not None and support == 0.5:
-            add("❓", "Support is unclear", "You weren't sure what support exists — a quick look at HR pages could clarify it.")
+            add(
+                "❓",
+                "Support is unclear",
+                "You weren't sure what support exists — a quick look at HR pages could clarify it.",
+            )
 
     if float(features.get("family_history") or 0) >= 1:
-        add("🌳", "Family history", "Family history raises awareness, not destiny — extra attention to early signs is wise.")
+        add(
+            "🌳",
+            "Family history",
+            "Family history raises awareness, not destiny — extra attention to early signs is wise.",
+        )
 
     if quiz:
         phq, gad = quiz["phq9"], quiz["gad7"]
         if phq["total"] >= 15:
-            add("💙", "Low mood is prominent", f"PHQ-9 {phq['total']}/27 ({phq['band']}) — this level deserves support, not just willpower.")
+            add(
+                "💙",
+                "Low mood is prominent",
+                f"PHQ-9 {phq['total']}/27 ({phq['band']}) — this level deserves support, not just willpower.",
+            )
         elif phq["total"] >= 10:
-            add("🌤️", "Low mood is showing up", f"PHQ-9 {phq['total']}/27 ({phq['band']}) — early enough that small changes help a lot.")
+            add(
+                "🌤️",
+                "Low mood is showing up",
+                f"PHQ-9 {phq['total']}/27 ({phq['band']}) — early enough that small changes help a lot.",
+            )
         elif phq["total"] >= 5:
-            add("🌱", "Mild mood dip", f"PHQ-9 {phq['total']}/27 ({phq['band']}) — worth tracking for a week or two.")
+            add(
+                "🌱",
+                "Mild mood dip",
+                f"PHQ-9 {phq['total']}/27 ({phq['band']}) — worth tracking for a week or two.",
+            )
         if gad["total"] >= 15:
-            add("🫁", "Anxiety is loud", f"GAD-7 {gad['total']}/21 ({gad['band']}) — constant worry is exhausting; techniques + support help.")
+            add(
+                "🫁",
+                "Anxiety is loud",
+                f"GAD-7 {gad['total']}/21 ({gad['band']}) — constant worry is exhausting; techniques + support help.",
+            )
         elif gad["total"] >= 10:
-            add("🌬️", "Anxiety is noticeable", f"GAD-7 {gad['total']}/21 ({gad['band']}) — catching it now keeps it manageable.")
+            add(
+                "🌬️",
+                "Anxiety is noticeable",
+                f"GAD-7 {gad['total']}/21 ({gad['band']}) — catching it now keeps it manageable.",
+            )
         elif gad["total"] >= 5:
-            add("🍃", "Some nervousness", f"GAD-7 {gad['total']}/21 ({gad['band']}) — normal range, but keep an eye on it.")
+            add(
+                "🍃",
+                "Some nervousness",
+                f"GAD-7 {gad['total']}/21 ({gad['band']}) — normal range, but keep an eye on it.",
+            )
 
     if not gaps:
-        add("✨", "Nothing stands out", "Your answers look steady today — a good moment to build habits before stress piles up.")
+        add(
+            "✨",
+            "Nothing stands out",
+            "Your answers look steady today — a good moment to build habits before stress piles up.",
+        )
     return gaps
 
 

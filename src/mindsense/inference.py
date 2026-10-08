@@ -276,7 +276,11 @@ def predict_risk(features: Mapping[str, Any]) -> dict[str, Any]:
         return _unavailable()
     row = _risk_row(features)
     try:
-        proba = float(model.predict_proba(row)[0][1]) if hasattr(model, "predict_proba") else float(model.predict(row)[0])
+        proba = (
+            float(model.predict_proba(row)[0][1])
+            if hasattr(model, "predict_proba")
+            else float(model.predict(row)[0])
+        )
     except Exception as exc:
         return _unavailable(f"risk model failed to run ({exc})")
     proba = min(max(proba, 0.0), 1.0)
@@ -300,7 +304,11 @@ def predict_intervention(features: Mapping[str, Any]) -> dict[str, Any]:
         return _unavailable()
     row = _risk_row(features)
     try:
-        proba = float(model.predict_proba(row)[0][1]) if hasattr(model, "predict_proba") else float(model.predict(row)[0])
+        proba = (
+            float(model.predict_proba(row)[0][1])
+            if hasattr(model, "predict_proba")
+            else float(model.predict(row)[0])
+        )
     except Exception as exc:
         return _unavailable(f"intervention model failed to run ({exc})")
     return {
@@ -439,7 +447,9 @@ def extract_entities(text: str) -> dict[str, Any]:
         if extractor is None:
             extractor_cls = getattr(entity_module, "EntityExtractor", None)
             if extractor_cls is None:
-                return _unavailable("entity module exposes neither extract_entities nor EntityExtractor")
+                return _unavailable(
+                    "entity module exposes neither extract_entities nor EntityExtractor"
+                )
             extractor = extractor_cls().extract
         result = extractor(text)
     except Exception as exc:
@@ -465,8 +475,11 @@ def _normalise_entities(result: Any) -> list[dict[str, Any]]:
             entities.append({"text": str(item[0]), "label": str(item[1]), "start": -1})
         else:
             entities.append(
-                {"text": str(getattr(item, "text", item)), "label": str(getattr(item, "label_", "ENTITY")),
-                 "start": int(getattr(item, "start", -1))}
+                {
+                    "text": str(getattr(item, "text", item)),
+                    "label": str(getattr(item, "label_", "ENTITY")),
+                    "start": int(getattr(item, "start", -1)),
+                }
             )
     return entities
 

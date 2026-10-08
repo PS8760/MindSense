@@ -23,10 +23,7 @@ theme.apply()
 sidebar.render_sidebar()
 
 st.title("📊 Community insights")
-st.caption(
-    "Exploratory dashboards over the harmonised datasets — descriptive only, "
-    "never causal."
-)
+st.caption("Exploratory dashboards over the harmonised datasets — descriptive only, never causal.")
 st.info(
     "Aggregates from the training datasets. Rows tagged **synthetic** appear only "
     "where a real dataset could not be acquired (see the badge below).",
@@ -56,9 +53,7 @@ def _source_badge(df: pd.DataFrame) -> None:
 
 
 def _empty(name: str) -> None:
-    st.warning(
-        f"``data/processed/{name}.parquet`` not found — run ``make data`` first."
-    )
+    st.warning(f"``data/processed/{name}.parquet`` not found — run ``make data`` first.")
 
 
 dataset = st.radio(
@@ -107,13 +102,13 @@ if dataset == "Lifestyle risk survey":
             labels=["≤19", "20–24", "25–34", "35–49", "50+"],
         )
     )
-    rate = (
-        view.groupby(["age_band", "population"], observed=True)["mh_risk"]
-        .mean()
-        .reset_index()
-    )
+    rate = view.groupby(["age_band", "population"], observed=True)["mh_risk"].mean().reset_index()
     fig1 = px.bar(
-        rate, x="age_band", y="mh_risk", color="population", barmode="group",
+        rate,
+        x="age_band",
+        y="mh_risk",
+        color="population",
+        barmode="group",
         color_discrete_sequence=PALETTE,
         title="Elevated-risk rate by age band and population",
         labels={"mh_risk": "Share flagged", "age_band": "Age band"},
@@ -122,7 +117,9 @@ if dataset == "Lifestyle risk survey":
 
     fig2 = px.box(
         view.dropna(subset=["stress_pressure_score"]),
-        x="population", y="stress_pressure_score", color="population",
+        x="population",
+        y="stress_pressure_score",
+        color="population",
         color_discrete_sequence=PALETTE,
         title="Stress / pressure score distribution (0–5)",
         points=False,
@@ -136,8 +133,12 @@ if dataset == "Lifestyle risk survey":
     sleep_view = view.dropna(subset=["sleep_hours"])
     if not sleep_view.empty:
         fig3 = px.histogram(
-            sleep_view, x="sleep_hours", color="mh_risk", barmode="overlay",
-            nbins=18, color_discrete_sequence=["#2FA88B", "#D95F5F"],
+            sleep_view,
+            x="sleep_hours",
+            color="mh_risk",
+            barmode="overlay",
+            nbins=18,
+            color_discrete_sequence=["#2FA88B", "#D95F5F"],
             title="Sleep hours by risk label (0 = no concern, 1 = flagged)",
             opacity=0.65,
         )
@@ -177,19 +178,24 @@ elif dataset == "DASS-42":
     k2.metric("Median depression score", f"{view['depression_score'].median():.0f}")
     k3.metric("Median anxiety score", f"{view['anxiety_score'].median():.0f}")
 
-    band_counts = (
-        view["depression_band"].value_counts().reindex(bands).dropna().reset_index()
-    )
+    band_counts = view["depression_band"].value_counts().reindex(bands).dropna().reset_index()
     band_counts.columns = ["band", "count"]
     fig1 = px.bar(
-        band_counts, x="band", y="count", color="band",
-        color_discrete_sequence=PALETTE, title="DASS depression bands",
+        band_counts,
+        x="band",
+        y="count",
+        color="band",
+        color_discrete_sequence=PALETTE,
+        title="DASS depression bands",
         category_orders={"band": bands},
     )
     fig1.update_layout(template="plotly_white", height=380, showlegend=False)
 
     fig2 = px.histogram(
-        view, x="depression_score", nbins=30, color_discrete_sequence=["#3B7DD8"],
+        view,
+        x="depression_score",
+        nbins=30,
+        color_discrete_sequence=["#3B7DD8"],
         title="Depression subscale score (0–42)",
     )
     fig2.update_layout(template="plotly_white", height=380, showlegend=False)
@@ -199,9 +205,14 @@ elif dataset == "DASS-42":
     col_b.plotly_chart(fig2, width="stretch")
 
     fig3 = px.histogram(
-        view, x="depression_score", color="gender", barmode="overlay",
-        nbins=25, color_discrete_sequence=PALETTE,
-        title="Depression score by gender (overlaid)", opacity=0.6,
+        view,
+        x="depression_score",
+        color="gender",
+        barmode="overlay",
+        nbins=25,
+        color_discrete_sequence=PALETTE,
+        title="Depression score by gender (overlaid)",
+        opacity=0.6,
     )
     fig3.update_layout(template="plotly_white", height=360)
     st.plotly_chart(fig3, width="stretch")
@@ -224,8 +235,12 @@ else:
     f1, f2 = st.columns(2)
     label_filter = f1.multiselect("Labels", label_order, default=label_order)
     min_len, max_len = 0, int(df["text_norm"].str.len().quantile(0.99))
-    len_range = f2.slider("Text length (chars)", 0, max(int(df['text_norm'].str.len().max()), 1),
-                          (0, min(600, max_len)))
+    len_range = f2.slider(
+        "Text length (chars)",
+        0,
+        max(int(df["text_norm"].str.len().max()), 1),
+        (0, min(600, max_len)),
+    )
 
     view = df[df["label"].isin(label_filter)]
     view = view[
@@ -243,18 +258,27 @@ else:
     counts = view["label"].value_counts().reindex(label_order).dropna().reset_index()
     counts.columns = ["label", "count"]
     fig1 = px.bar(
-        counts, x="label", y="count", color="label",
-        color_discrete_sequence=PALETTE, title="Mental-state label distribution",
+        counts,
+        x="label",
+        y="count",
+        color="label",
+        color_discrete_sequence=PALETTE,
+        title="Mental-state label distribution",
     )
     fig1.update_layout(template="plotly_white", height=380, showlegend=False)
 
     fig2 = px.box(
-        view, x="label", y=view["text_norm"].str.len().clip(upper=max_len),
-        color="label", color_discrete_sequence=PALETTE, points=False,
+        view,
+        x="label",
+        y=view["text_norm"].str.len().clip(upper=max_len),
+        color="label",
+        color_discrete_sequence=PALETTE,
+        points=False,
         title=f"Text length by label (clipped at p99 = {max_len} chars)",
     )
-    fig2.update_layout(template="plotly_white", height=380, showlegend=False,
-                       yaxis_title="length (chars)")
+    fig2.update_layout(
+        template="plotly_white", height=380, showlegend=False, yaxis_title="length (chars)"
+    )
     fig2.update_xaxes(categoryorder="array", categoryarray=label_order)
 
     col_a, col_b = st.columns(2)

@@ -18,9 +18,16 @@ def test_snake_case_column_names():
 
 def test_gender_normalisation_collapses_free_text():
     cases = {
-        "Male": "male", "femake": "female", "F": "female", "cis male": "male",
-        "Non-binary": "other", "genderqueer": "other", "": "other",
-        "Woman": "female", "agender": "other", "trans-female": "female",
+        "Male": "male",
+        "femake": "female",
+        "F": "female",
+        "cis male": "male",
+        "Non-binary": "other",
+        "genderqueer": "other",
+        "": "other",
+        "Woman": "female",
+        "agender": "other",
+        "trans-female": "female",
         "guy": "male",
     }
     for raw, expected in cases.items():
@@ -34,7 +41,7 @@ def test_yes_no_handles_strings_and_numerics():
 
 
 def test_condition_group_matches_mental_health_only():
-    assert _condition_group("Bipolar Disorde") == "bipolar"   # source typo
+    assert _condition_group("Bipolar Disorde") == "bipolar"  # source typo
     assert _condition_group("Depression") == "depression"
     assert _condition_group("Anxiety") == "anxiety"
     assert _condition_group("Post-traumatic Stress Disorder") == "ptsd"

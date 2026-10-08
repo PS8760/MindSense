@@ -29,9 +29,9 @@ st.caption("Optional emotion cue from a face photo · runs locally on your machi
 
 st.markdown(
     '<div class="ms-disclaimer"><strong>NON-DIAGNOSTIC.</strong> '
-    'A face model reads expressions, not people — it cannot diagnose mood '
-    'disorders and its output says nothing definitive about anyone. '
-    'Images are processed in memory and never saved.</div>',
+    "A face model reads expressions, not people — it cannot diagnose mood "
+    "disorders and its output says nothing definitive about anyone. "
+    "Images are processed in memory and never saved.</div>",
     unsafe_allow_html=True,
 )
 
@@ -54,8 +54,7 @@ if not enabled:
         "```bash\nENABLE_FACE=1 streamlit run app/Home.py\n```",
     )
     st.caption(
-        "The other six pages work fully without it. Trained weights also require "
-        "``make train``."
+        "The other six pages work fully without it. Trained weights also require ``make train``."
     )
     st.stop()
 

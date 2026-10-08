@@ -24,8 +24,7 @@ DASS_ITEM_TEXTS: dict[int, str] = {
     6: "I tended to over-react to situations",
     7: "I had a feeling of shakiness (e.g., legs going to give way)",
     8: "I found it difficult to relax",
-    9: "I found myself in situations that made me so anxious I was most "
-    "relieved when they ended",
+    9: "I found myself in situations that made me so anxious I was most relieved when they ended",
     10: "I felt that I had nothing to look forward to",
     11: "I found myself getting upset rather easily",
     12: "I felt that I was using a lot of nervous energy",
@@ -49,19 +48,17 @@ DASS_ITEM_TEXTS: dict[int, str] = {
     27: "I found that I was very irritable",
     28: "I felt I was close to panic",
     29: "I found it hard to calm down after something upset me",
-    30: "I feared that I would be \"thrown\" by some trivial but unfamiliar task",
+    30: 'I feared that I would be "thrown" by some trivial but unfamiliar task',
     31: "I was unable to become enthusiastic about anything",
     32: "I found it difficult to tolerate interruptions to what I was doing",
     33: "I was in a state of nervous tension",
     34: "I felt I was pretty worthless",
-    35: "I was intolerant of anything that kept me from getting on with what "
-    "I was doing",
+    35: "I was intolerant of anything that kept me from getting on with what I was doing",
     36: "I felt terrified",
     37: "I could see nothing in the future to be hopeful about",
     38: "I felt that life was meaningless",
     39: "I found myself getting agitated",
-    40: "I was worried about situations in which I might panic and make a "
-    "fool of myself",
+    40: "I was worried about situations in which I might panic and make a fool of myself",
     41: "I experienced trembling (e.g., in the hands)",
     42: "I found it difficult to work up the initiative to do things",
 }

@@ -120,7 +120,9 @@ def risk_gauge(probability: float, tier: str) -> None:
             },
         )
     )
-    fig.update_layout(template="plotly_white", height=320, margin={"l": 30, "r": 30, "t": 70, "b": 10})
+    fig.update_layout(
+        template="plotly_white", height=320, margin={"l": 30, "r": 30, "t": 70, "b": 10}
+    )
     st.plotly_chart(fig, width="stretch")
 
 
@@ -132,9 +134,7 @@ def contributions_chart(contributions: Sequence[Mapping[str, Any]]) -> None:
     labels = [str(item["feature"]).replace("_", " ") for item in items]
     values = [float(item["contribution"]) for item in items]
     colours = ["#2FA88B" if v >= 0 else "#D95F5F" for v in values]
-    fig = go.Figure(
-        go.Bar(x=values, y=labels, orientation="h", marker_color=colours)
-    )
+    fig = go.Figure(go.Bar(x=values, y=labels, orientation="h", marker_color=colours))
     fig.update_layout(
         title="What pushed the estimate (approximate contribution)",
         template="plotly_white",
@@ -152,8 +152,7 @@ def entity_chips(entities: Sequence[Mapping[str, Any]]) -> None:
         st.caption("No clinical entities found in this text.")
         return
     html = "".join(
-        f'<span class="ms-tag ms-tag-info" title="{e["label"]}">'
-        f'{e["text"]} · {e["label"]}</span>'
+        f'<span class="ms-tag ms-tag-info" title="{e["label"]}">{e["text"]} · {e["label"]}</span>'
         for e in entities
     )
     st.markdown(html, unsafe_allow_html=True)
@@ -202,6 +201,5 @@ def next_steps(tier: str) -> None:
             )
         )
     st.caption(
-        "These are general wellness suggestions from public health guidance, "
-        "not medical advice."
+        "These are general wellness suggestions from public health guidance, not medical advice."
     )

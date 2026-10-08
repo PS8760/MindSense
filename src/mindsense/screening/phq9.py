@@ -21,13 +21,11 @@ PHQ9_ITEMS: list[str] = [
     "Poor appetite or overeating",
     "Feeling bad about yourself — or that you are a failure or have "
     "let yourself or your family down",
-    "Trouble concentrating on things, such as reading the newspaper or "
-    "watching television",
+    "Trouble concentrating on things, such as reading the newspaper or watching television",
     "Moving or speaking so slowly that other people could have noticed — "
     "or the opposite, being so fidgety or restless that you have been "
     "moving around a lot more than usual",
-    "Thoughts that you would be better off dead, or of hurting yourself "
-    "in some way",
+    "Thoughts that you would be better off dead, or of hurting yourself in some way",
 ]
 
 #: Likert labels shared by PHQ-9 and GAD-7 (0–3).

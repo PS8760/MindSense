@@ -48,9 +48,7 @@ _EMOJI_MAP = {
     "💕": " love ",
     "💔": " heartbreak ",
 }
-_EMOJI_RE = re.compile(
-    "[" + "".join(map(re.escape, _EMOJI_MAP)) + r"]|[\U0001F300-\U0001FAFF☀-➿]"
-)
+_EMOJI_RE = re.compile("[" + "".join(map(re.escape, _EMOJI_MAP)) + r"]|[\U0001F300-\U0001FAFF☀-➿]")
 
 
 def normalize_text(text: str, *, min_length: int = 0) -> str:

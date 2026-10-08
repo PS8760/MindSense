@@ -60,9 +60,13 @@ def barplot(
         # Single-series bars: pass hue=x so modern seaborn accepts a full
         # colour cycle without the "palette without hue" deprecation.
         sns.barplot(
-            data=data, x=x, y=y, hue=x,
+            data=data,
+            x=x,
+            y=y,
+            hue=x,
             palette=sns.color_palette(PALETTE, data[x].nunique()),
-            legend=False, ax=ax,
+            legend=False,
+            ax=ax,
         )
     else:
         sns.barplot(data=data, x=x, y=y, hue=hue, ax=ax, palette=PALETTE)

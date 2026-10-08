@@ -52,10 +52,11 @@ def _primary_path(key: str) -> Path | None:
         path = repo_path("data", "raw", key, name)
         return path if path.exists() else None
     raw = repo_path("data", "raw", key)
-    files = sorted(
-        p for p in raw.rglob("*")
-        if p.is_file() and p.name != ".mindsense_synthetic"
-    ) if raw.exists() else []
+    files = (
+        sorted(p for p in raw.rglob("*") if p.is_file() and p.name != ".mindsense_synthetic")
+        if raw.exists()
+        else []
+    )
     return files[0] if files else None
 
 
@@ -81,7 +82,8 @@ def _digest(path: Path | None, key: str) -> str:
         return ""
     if key == "fer2013" or path.suffix == ".jpg":
         names = "\n".join(
-            str(p.relative_to(repo_path())) for p in sorted(repo_path("data", "raw", key).rglob("*.jpg"))
+            str(p.relative_to(repo_path()))
+            for p in sorted(repo_path("data", "raw", key).rglob("*.jpg"))
         )
         import hashlib
 
@@ -132,10 +134,16 @@ def build_inventory(results: list[DatasetResult]) -> pd.DataFrame:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--only", action="append", default=[], metavar="KEY",
-                        help="restrict to one dataset key (repeatable)")
-    parser.add_argument("--no-synthetic", action="store_true",
-                        help="never fall back to labelled synthetic data")
+    parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        metavar="KEY",
+        help="restrict to one dataset key (repeatable)",
+    )
+    parser.add_argument(
+        "--no-synthetic", action="store_true", help="never fall back to labelled synthetic data"
+    )
     args = parser.parse_args(argv)
 
     if args.only:

@@ -63,14 +63,20 @@ def test_professional_mapper_schema_and_proxies():
     assert out["mh_risk"].tolist() == [1, 0]
     assert out["population"].eq("professional").all()
     # support = mean(benefits, care_options)
-    assert out["support_available"].iloc[0] == 1.0          # Yes + Yes
-    assert out["support_available"].iloc[1] == 0.25         # No + Not sure
+    assert out["support_available"].iloc[0] == 1.0  # Yes + Yes
+    assert out["support_available"].iloc[1] == 0.25  # No + Not sure
     # work_interfere rank-scaled onto the 0-5 stress axis
-    assert out["stress_pressure_score"].iloc[0] == 5.0      # Often
-    assert out["stress_pressure_score"].iloc[1] == 0.0      # Never
+    assert out["stress_pressure_score"].iloc[0] == 5.0  # Often
+    assert out["stress_pressure_score"].iloc[1] == 0.0  # Never
     # student-only fields stay NaN
-    for col in ("sleep_hours", "satisfaction_score", "work_study_hours",
-                "financial_stress", "diet_quality", "suicidal_thoughts"):
+    for col in (
+        "sleep_hours",
+        "satisfaction_score",
+        "work_study_hours",
+        "financial_stress",
+        "diet_quality",
+        "suicidal_thoughts",
+    ):
         assert out[col].isna().all(), col
 
 

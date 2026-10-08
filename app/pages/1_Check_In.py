@@ -36,7 +36,9 @@ theme.hero(
     "and small steps that fit your answers.",
 )
 theme.steps(
-    "1 · About you", "2 · How you've been feeling", "3 · Your results",
+    "1 · About you",
+    "2 · How you've been feeling",
+    "3 · Your results",
     active=2 if has_results else 0,
 )
 
@@ -177,8 +179,7 @@ if run_all:
         if risk_result["available"]:
             fusion.record(
                 "check-in",
-                f"concern estimate {risk_result['probability']:.0%} "
-                f"({risk_result['tier']} tier)",
+                f"concern estimate {risk_result['probability']:.0%} ({risk_result['tier']} tier)",
                 tone="warn" if risk_result["tier"] in {"elevated", "higher"} else "info",
             )
     except ValueError as exc:
@@ -200,8 +201,7 @@ if run_all:
         )
         fusion.record(
             "check-in",
-            f"PHQ-9 {phq['band']} ({phq['total']}/27), GAD-7 {gad['band']} "
-            f"({gad['total']}/21)",
+            f"PHQ-9 {phq['band']} ({phq['total']}/27), GAD-7 {gad['band']} ({gad['total']}/21)",
             tone=tone,
         )
         if phq["crisis_triggered"]:
@@ -258,8 +258,7 @@ if risk_result and risk_result.get("available"):
     if risk_result["contributions"]:
         widgets.contributions_chart(risk_result["contributions"])
         st.caption(
-            "How each answer moved the estimate — approximate, associational, "
-            "never proof of cause."
+            "How each answer moved the estimate — approximate, associational, never proof of cause."
         )
     widgets.next_steps(risk_result["tier"])
 

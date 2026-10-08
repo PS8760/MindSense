@@ -34,13 +34,21 @@ st.caption(
 
 # short human tab label per section; file globs still use expNN names.
 EXPERIMENTS = {
-    1: ("Data pipeline", "Acquisition ladder, cleaning, harmonisation, splits, data quality.", "Data"),
+    1: (
+        "Data pipeline",
+        "Acquisition ladder, cleaning, harmonisation, splits, data quality.",
+        "Data",
+    ),
     2: ("Explore the data", "Distributions, associations, text statistics.", "Explore"),
     3: ("Photo mood model", "CNN on FER-2013 with Grad-CAM (optional module).", "Photos"),
     4: ("Mood screener", "DASS severity bands + a compact short screener.", "Screener"),
     5: ("Clinical terms", "Rule+lexicon extraction of clinical-style mentions.", "Entities"),
     6: ("Risk prediction", "Core model on the harmonised lifestyle data.", "Risk"),
-    7: ("Text mining", "Mental-state classification, Dreaddit external check, drug reviews.", "Words"),
+    7: (
+        "Text mining",
+        "Mental-state classification, Dreaddit external check, drug reviews.",
+        "Words",
+    ),
     8: ("Explainability", "SHAP/LIME examples and subgroup/fairness tables.", "Explainability"),
 }
 
@@ -136,8 +144,14 @@ with tab_datasets:
                 }
             )
         else:
-            row.update({"rows": None, "data_source": "not inventoried yet",
-                        "access_status": "unknown", "accessed_on": ""})
+            row.update(
+                {
+                    "rows": None,
+                    "data_source": "not inventoried yet",
+                    "access_status": "unknown",
+                    "accessed_on": "",
+                }
+            )
         rows.append(row)
     table = pd.DataFrame(rows)
     st.dataframe(table, width="stretch", height=420)
@@ -176,14 +190,15 @@ with tab_models:
     else:
         st.info("No `models/metadata.json` yet — produced by `make train`.")
 
-    fairness = sorted(repo_path("reports", "tables").glob("*fairness*")) if repo_path(
-        "reports", "tables"
-    ).exists() else []
+    fairness = (
+        sorted(repo_path("reports", "tables").glob("*fairness*"))
+        if repo_path("reports", "tables").exists()
+        else []
+    )
     st.markdown("### Subgroup / fairness tables")
     if not fairness:
         st.info(
-            "Fairness tables arrive once the fairness report runs "
-            "(`reports/tables/*fairness*`)."
+            "Fairness tables arrive once the fairness report runs (`reports/tables/*fairness*`)."
         )
     for path in fairness:
         _show_table(path)

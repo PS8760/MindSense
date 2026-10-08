@@ -28,8 +28,11 @@ log = get_logger("mindsense.synthetic_script")
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("keys", nargs="*", help="dataset keys to synthesise")
-    parser.add_argument("--all-missing", action="store_true",
-                        help="synthesise every configured dataset with no raw files")
+    parser.add_argument(
+        "--all-missing",
+        action="store_true",
+        help="synthesise every configured dataset with no raw files",
+    )
     args = parser.parse_args(argv)
 
     keys = list(args.keys)

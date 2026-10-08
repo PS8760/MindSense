@@ -100,8 +100,11 @@ with log_box:
             options=[1, 2, 3, 4, 5],
             value=3,
             format_func=lambda v: {
-                1: "😞 low", 2: "🙁 unsettled", 3: "😐 steady",
-                4: "🙂 good", 5: "😄 bright",
+                1: "😞 low",
+                2: "🙁 unsettled",
+                3: "😐 steady",
+                4: "🙂 good",
+                5: "😄 bright",
             }[v],
             key="ms_home_mood",
         )
@@ -111,8 +114,7 @@ with log_box:
             st.toast("Noted — thank you for checking in 💚")
     if mood_log:
         st.caption(
-            f"{len(mood_log)} mood point(s) this session · see the trend on "
-            "**Mood patterns**."
+            f"{len(mood_log)} mood point(s) this session · see the trend on **Mood patterns**."
         )
 
 st.write("")
