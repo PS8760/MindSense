@@ -1,0 +1,141 @@
+# MindSense global configuration.
+# All paths are relative to the repository root unless absolute.
+seed: 42
+
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  models: models
+  figures: reports/figures
+  metrics: reports/metrics
+  tables: reports/tables
+
+split:
+  train: 0.70
+  val: 0.15
+  test: 0.15
+  stratify_by: [mh_risk, population]
+
+datasets:
+  student_depression:
+    rank: 1
+    tier: A
+    kaggle: hopesb/student-depression-dataset
+    source_url: https://www.kaggle.com/datasets/hopesb/student-depression-dataset
+    licence: "See Kaggle dataset page"
+    population: student
+    experiments: [1, 2, 6, 8]
+  sentiment_mh:
+    rank: 2
+    tier: A
+    kaggle: suchintikasarkar/sentiment-analysis-for-mental-health
+    source_url: https://www.kaggle.com/datasets/suchintikasarkar/sentiment-analysis-for-mental-health
+    licence: "See Kaggle dataset page"
+    population: online_volunteer
+    experiments: [1, 2, 5, 7, 8]
+  dass42:
+    rank: 3
+    tier: A
+    direct_url: https://openpsychometrics.org/_rawdata/DASS_data_21.02.19.zip
+    source_url: https://openpsychometrics.org/tests/DASS/
+    licence: "Open Psychometrics raw data terms; DASS instrument public domain (Lovibond & Lovibond)"
+    population: mixed
+    experiments: [1, 2, 4, 6, 8]
+  osmi_2014:
+    rank: 4
+    tier: A
+    openml_id: 43674
+    openml_alt_id: 43664
+    openml_name: Mental-Health-in-Tech-Survey
+    source_url: https://www.openml.org/search?type=data&id=43674
+    licence: "OSMI survey data (open replication; attribute OSMI)"
+    population: professional
+    experiments: [1, 2, 4, 6, 8]
+  drug_reviews:
+    rank: 5
+    tier: A
+    uci_id: 462
+    kaggle_mirror: jessicali9530/kuc-hackathon-winter-2018
+    source_url: https://archive.ics.uci.edu/dataset/462/drug+review+dataset+drugs+com
+    licence: "Research use only, no commercial use, no redistribution; citation required"
+    population: patient
+    experiments: [2, 5, 7]
+  fer2013:
+    rank: 6
+    tier: A
+    kaggle: msambare/fer2013
+    source_url: https://www.kaggle.com/datasets/msambare/fer2013
+    licence: "CC0 / see Kaggle page"
+    population: mixed
+    experiments: [3, 8]
+  dreaddit:
+    rank: 7
+    tier: B
+    hf: andreagasparini/dreaddit
+    source_url: https://huggingface.co/datasets/andreagasparini/dreaddit
+    licence: "Research citation: Turcan & McKeown, Louhi 2019"
+    population: online_volunteer
+    experiments: [7, 8]
+  osmi_2017_21:
+    rank: 8
+    tier: B
+    kaggle: osmihelp
+    source_url: https://data.mendeley.com/datasets/mmnzx4w8cg/1
+    licence: "OSMI; attribute source"
+    population: professional
+    experiments: [2, 6, 8]
+  student_depression_small:
+    rank: 9
+    tier: C
+    kaggle: ikynahidwin/depressionstunt-dataset
+    source_url: https://www.kaggle.com/datasets/ikynahidwin/depressionstunt-dataset
+    licence: "See Kaggle dataset page"
+    population: student
+    experiments: [6, 8]
+  druglib:
+    rank: 10
+    tier: C
+    uci_id: 461
+    source_url: https://archive.ics.uci.edu/dataset/461/druglib+review+dataset
+    licence: "Research use only; attribute UCI"
+    population: patient
+    experiments: [7]
+
+# Risk-model feature policy
+features:
+  # Sensitive / high-risk fields excluded from the default deployed model.
+  excluded_default:
+    - "Have you ever had suicidal thoughts?"
+    - suicidal_thoughts
+  ablation_fields:
+    - suicidal_thoughts
+
+screening:
+  phq9_thresholds: [4, 9, 14, 19]        # minimal/mild/moderate/mod-severe/severe
+  gad7_thresholds: [4, 9, 14]            # minimal/mild/moderate/severe
+  crisis:
+    phq9_item9_min: 1                    # any endorsement -> crisis banner
+    suicidal_class_threshold: 0.55       # text model probability trigger
+    crisis_lexicon_boost: true
+
+text_model:
+  max_features: 50000
+  ngram_max: 2
+  min_df: 2
+  max_latency_ms: 200
+  max_size_mb: 50
+
+image_model:
+  input_size: [224, 224]
+  emotion_classes: [angry, disgust, fear, happy, sad, surprise, neutral]
+  mood_cue_groups:
+    negative-affect: [angry, disgust, fear, sad]
+    neutral: [neutral]
+    positive-affect: [happy, surprise]
+  onnx_max_mb: 20
+
+prognosis:
+  dass_item_budget: 14            # compact screener size chosen in Exp 4
+  dass_target_subscale: depression
+  merge_sparse_bands: [Severe, Extremely severe]  # applied only if sparse

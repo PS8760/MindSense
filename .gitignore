@@ -1,0 +1,51 @@
+# Data (never commit raw datasets)
+data/raw/
+data/interim/
+*.zip
+*.csv.gz
+
+# Large artifacts
+*.onnx
+*.pt
+*.pth
+*.h5
+!models/**/metadata.json
+
+# Trained model binaries (keep metadata + small artifacts)
+models/**/model.joblib
+models/**/model.pkl
+models/**/model.xgb
+models/**/model.bst
+models/**/*_vectorizer.joblib
+models/**/preprocessor.joblib
+models/**/*.onnx
+
+# Reports binary outputs stay except curated ones
+# (figures/metrics/tables are committed for the report)
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+*.egg
+dist/
+build/
+
+# Env / secrets
+.env
+.kaggle/
+kaggle.json
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Streamlit
+.streamlit/secrets.toml

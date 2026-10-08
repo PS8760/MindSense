@@ -1,0 +1,26 @@
+[project]
+name = "mindsense"
+version = "1.0.0"
+description = "MindSense: early, explainable mental-wellness risk screening (academic mini project)."
+requires-python = ">=3.11,<3.13"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["notebooks", ".venv", "data", "models", "reports"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM"]
+ignore = [
+  "E501",   # line length handled by formatter where practical
+  "B008",   # streamlit call pattern in defaults
+  "SIM108", # ternaries hurt readability in places
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]

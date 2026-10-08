@@ -1,0 +1,47 @@
+# Crisis support lines shown by MindSense.
+# NOTE: verify every number/URL before shipping (see docs/DECISIONS.md).
+# Verified: 2026-10-08 (see docs/DATA_SOURCES.md for verification notes).
+
+default_region: India
+
+regions:
+  India:
+    lines:
+      - name: "Tele-MANAS (Government of India)"
+        number: "14416"
+        url: "https://telemanas.mohfw.gov.in/"
+        note: "24x7 tele-mental health support, toll-free, all India."
+      - name: "KIRAN Mental Health Helpline"
+        number: "1800-599-0019"
+        url: "https://www.kiran.gov.in/"
+        note: "Government of India helpline, 24x7, toll-free (multiple languages)."
+  International:
+    lines:
+      - name: "Find A Helpline (directory)"
+        number: null
+        url: "https://findahelpline.com/"
+        note: "Directory of crisis lines by country."
+  United States:
+    lines:
+      - name: "988 Suicide & Crisis Lifeline"
+        number: "988"
+        url: "https://988lifeline.org/"
+        note: "Call or text 988; chat available online, 24x7."
+  United Kingdom:
+    lines:
+      - name: "Samaritans"
+        number: "116 123"
+        url: "https://www.samaritans.org/"
+        note: "Free, 24x7, any age, any problem."
+  Australia:
+    lines:
+      - name: "Lifeline Australia"
+        number: "13 11 14"
+        url: "https://www.lifeline.org.au/"
+        note: "24x7 crisis support and suicide prevention."
+
+# Shown alongside helplines in the crisis banner.
+general_guidance:
+  - "If you are in immediate danger, call your local emergency number."
+  - "Reach out to a trusted friend, family member or counsellor."
+  - "Consider booking an appointment with a mental-health professional."
