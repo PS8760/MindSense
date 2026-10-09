@@ -1,8 +1,9 @@
 """Mood selfie (optional): camera/upload → emotion + mood cue.
 
-Feature-flagged with ``ENABLE_FACE=1`` (Section 8, page 5). Always shows a
-prominent non-diagnostic label; Grad-CAM overlay appears when the artifact
-provides one.
+Feature-flagged with ``ENABLE_FACE`` (on by default, ``ENABLE_FACE=0`` opts
+out); when it is off, an in-app button turns the camera on for the session
+without a restart. Always shows a prominent non-diagnostic label; Grad-CAM
+overlay appears when the artifact provides one.
 """
 
 from __future__ import annotations
@@ -38,32 +39,51 @@ st.markdown(
 if fusion.crisis_flag():
     widgets.crisis_banner(fusion.crisis_flag()["reasons"])
 
-enabled = os.environ.get("ENABLE_FACE", "0") == "1"
+env_enabled = os.environ.get("ENABLE_FACE", "1") != "0"
+session_enabled = bool(st.session_state.get("ms_face_enable_session"))
+enabled = env_enabled or session_enabled
 st.checkbox(
-    "Enable face module for this session (requires ENABLE_FACE=1 at launch)",
+    "Face module active for this session",
     value=enabled,
     disabled=True,
     key="ms_face_flag",
-    help="Start the app with ENABLE_FACE=1 to switch this on.",
+    help="You can switch the camera on for just this visit — no restart needed.",
 )
 
 if not enabled:
     st.info(
-        "The face module is **off by default** (privacy and cold-start budget). "
-        "To try it, relaunch with:\n\n"
-        "```bash\nENABLE_FACE=1 streamlit run app/Home.py\n```",
+        "The face module is switched off for privacy. You can turn it on just "
+        "for this visit — images are processed in memory and never saved, and "
+        "it resets when you reload the page."
     )
-    st.caption(
-        "The other six pages work fully without it. Trained weights also require ``make train``."
-    )
+    if st.button(
+        "🎥 Enable camera for this session",
+        type="primary",
+        key="ms_face_enable",
+    ):
+        st.session_state["ms_face_enable_session"] = True
+        st.rerun()
+    st.caption("The other pages work fully without it.")
     st.stop()
 
 source = st.radio("Image source", ["📷 Camera", "🖼 Upload a photo"], horizontal=True)
 image_bytes: bytes | None = None
 if source == "📷 Camera":
-    captured = st.camera_input("Look at the camera")
-    if captured is not None:
-        image_bytes = captured.getvalue()
+    if st.session_state.get("ms_cam_active"):
+        captured = st.camera_input("Look at the camera")
+        if captured is not None:
+            image_bytes = captured.getvalue()
+        if st.button("⏹ Stop camera", key="ms_cam_stop"):
+            st.session_state["ms_cam_active"] = False
+            st.rerun()
+    else:
+        st.caption(
+            "Press start to switch on your camera. Your browser will ask for "
+            "permission; nothing is recorded and images are never saved."
+        )
+        if st.button("🎥 Start camera", type="primary", key="ms_cam_start"):
+            st.session_state["ms_cam_active"] = True
+            st.rerun()
 else:
     uploaded = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png", "webp"])
     if uploaded is not None:

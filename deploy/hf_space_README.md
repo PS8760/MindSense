@@ -34,8 +34,8 @@ resources. See the repo README for the full docs.
 3. Open the Space → **Settings → Variables and secrets** and add (optional):
    - `GROQ_API_KEY` — enables kinder, Groq-drafted suggestions; without it the
      app silently uses offline suggestions.
-   - `APP_ENV=production`, `ENABLE_FACE=1` (only if you want the facial
-     mood-cue; needs the ONNX which is already committed under `models/`).
+   - `APP_ENV=production`, `ENABLE_FACE=0` (only if you want to disable the
+     facial mood-cue; the ONNX is already committed under `models/`).
 4. Push from the Space repo:
    ```bash
    cd $HF

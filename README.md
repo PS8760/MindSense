@@ -29,7 +29,7 @@ python scripts/smoke_app.py
 
 | Flag | Default | Meaning |
 | --- | --- | --- |
-| `ENABLE_FACE` | `0` | Facial mood-cue module (needs `models/face_emotion.onnx`) |
+| `ENABLE_FACE` | `1` | Facial mood-cue module (needs `models/face_emotion.onnx`); set `0` to disable |
 | `ENABLE_TRANSFORMER` | `0` | DistilBERT text path for comparisons (heavy) |
 | `DEFAULT_REGION` | `India` | Default helpline region in the sidebar |
 | `APP_ENV` | `local` | `local \| ci \| production` |
