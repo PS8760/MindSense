@@ -21,7 +21,7 @@ Fast checks:
 
 ```bash
 make lint      # ruff check (src app tests scripts)
-make test      # pytest (122 tests, incl. AppTest smoke of all 8 pages)
+make test      # pytest (141 tests, incl. AppTest smoke of all 9 pages)
 python scripts/smoke_app.py
 ```
 
@@ -46,9 +46,14 @@ test split. Winners are summarised in `reports/metrics/leaderboard.json`.
 | Exp | Task | Models compared | Best on test |
 | --- | --- | --- | --- |
 | 03 image | FER-2013 mood-cue classification | logistic / random-forest / XGBoost / MLP | MLP (macro-F1 0.516) → `models/face_emotion.onnx` |
-| 04 tabular | risk screen (student + professional) | logistic / RF / gradient-boosting | gradient-boosting (macro-F1 0.840) |
-| 06 text | MH-corpus screening (7 classes) | Naive-Bayes / logistic / LinearSVC | linear-SVC (macro-F1 0.686) |
-| 07 prognosis | DASS-42 subscale regression | linear / RF / gradient-boosting | gradient-boosting (RMSE 10.47) |
+| 04 tabular | risk screen (student + professional) | logistic / RF / gradient-boosting | gradient-boosting (macro-F1 0.843) |
+| 06 text | MH-corpus screening (7 classes) | Naive-Bayes / logistic / LinearSVC | linear-SVC (macro-F1 0.684) |
+| 07 prognosis | DASS-42 subscale regression | linear / RF / gradient-boosting | gradient-boosting (RMSE 10.50) |
+
+The **Model comparison** tab on page 6 (`app/components/model_info.py`) renders
+these rankings in the app — accuracy / precision / recall / F1 per model, the
+🏆 best pick, and a clear note showing **which model answers today** (the shipped
+artifact, or the Groq backend when none is present).
 
 `make train --quick` (CI) runs all four on tiny samples; `python -m
 mindsense.models.train_all --help` lists flags. The image zoo fits its
@@ -61,6 +66,11 @@ fresh clone/deploy has no risk/intervention/severity/text artifacts. Those
 features then run on the **Groq AI backend** (set `GROQ_API_KEY`) and report
 `source="groq"`; once `make train` produces local artifacts they take over
 (local-first). `mindsense.groq` is the shared, streamlit/torch-free client.
+
+The same key also powers **Calmer** (page 8): a calm-companion chat that shows a
+short "thinking" line before its reply, plus a mood-lifting content section. With
+no key, Calmer and the other AI features fall back to hand-written offline copy
+and never break.
 
 ## Theme
 
@@ -103,7 +113,7 @@ synthetic-data notebook smoke test, and a **Docker build + health check**
 ## Layout
 
 ```
-app/            Streamlit pages (Home + 1–7) and UI components
+app/            Streamlit pages (Home + 1–8) and UI components
 src/mindsense/  inference API, screening/scoring, models, utils (the package)
 config/         global + helplines configuration
 models/         exported artifacts + metadata.json (mood-cue ONNX)
