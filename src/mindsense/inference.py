@@ -703,15 +703,19 @@ def _normalise_entities(result: Any) -> list[dict[str, Any]]:
     return entities
 
 
-def analyze_face(image: Any) -> dict[str, Any]:
+def analyze_face(image: Any, *, enabled: bool | None = None) -> dict[str, Any]:
     """Face crop → emotion probabilities + mood cue (Exp 3, ONNX, optional).
 
-    Enabled by default; set ``ENABLE_FACE=0`` to opt out. Requires the
+    On by default; ``ENABLE_FACE=0`` opts out. Callers that manage their own
+    toggle (e.g. the app's session-level enable button) may pass ``enabled``
+    explicitly to override the environment flag. Requires the
     ``models/face_emotion.onnx`` artifact; otherwise returns ``available=False``
     with the exact reason.
     """
-    if os.environ.get("ENABLE_FACE", "1") != "1":
-        return _unavailable("Face module is switched off — start the app with ``ENABLE_FACE=1``.")
+    if enabled is None:
+        enabled = os.environ.get("ENABLE_FACE", "1") != "0"
+    if not enabled:
+        return _unavailable("Face module is switched off for this session.")
     path = _artifact_path("face")
     if path is None:
         return _unavailable(_FACE_HINT)

@@ -91,7 +91,7 @@ else:
 
 if image_bytes:
     try:
-        result = inference.analyze_face(image_bytes)
+        result = inference.analyze_face(image_bytes, enabled=enabled)
     except ValueError as exc:
         st.error(str(exc))
         result = None
