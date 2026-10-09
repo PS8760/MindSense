@@ -38,8 +38,8 @@ def test_build_features_encodes_demographics() -> None:
     assert any(c.startswith("country_") for c in x.columns)
 
 
-def test_train_prognosis_ranks_regressors_and_reports_rmse() -> None:
-    result = train_prognosis(quick=True, data=_frame(90))
+def test_train_prognosis_ranks_regressors_and_reports_rmse(tmp_path) -> None:
+    result = train_prognosis(quick=True, data=_frame(90), out_dir=tmp_path)
     assert result["best"] in {"linear", "random_forest", "gradient_boosting"}
     assert result["test"]["rmse_mean"] >= 0.0
     assert set(TARGET_COLS) <= set(result["test"]["rmse_by_target"])

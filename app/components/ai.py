@@ -278,3 +278,140 @@ def reflection(text: str) -> dict[str, str]:
             ),
             "source": "local",
         }
+
+
+# --------------------------------------------------------------------------- #
+# Calmer — calm companion chatbot (shows its thinking, then the answer)
+# --------------------------------------------------------------------------- #
+_CALMER_SYSTEM = (
+    "You are Calmer, a warm, steady companion inside MindSense. Your purpose is "
+    "to help the person feel calm, grounded and a little lighter. Be human, "
+    "gentle and brief. Validate first, then offer ONE small concrete step "
+    "(a breath, a grounding exercise, a tiny action, a warm reframe). Never "
+    "diagnose or give medical advice. If they mention self-harm, suicide or "
+    "feeling unsafe, gently and clearly encourage contacting a crisis line or a "
+    "trusted person right away. Respond with JSON only, no prose, exactly: "
+    '{"thinking": "<one short sentence of your private reasoning about what '
+    'they seem to need>", "reply": "<your warm reply, 2-4 short sentences, '
+    'plain language, English>"}.'
+)
+
+_CALMER_FALLBACK = (
+    "I'm right here with you. Let's take one slow breath in through the nose, "
+    "and a longer breath out — just that, for now. You don't have to sort "
+    "everything this minute. If you'd like, tell me the one thing that's "
+    "weighing on you most, and we'll take it one small step at a time."
+)
+
+
+@st.cache_data(ttl=600, show_spinner=False)
+def _cached_calmer(history_json: str) -> dict[str, str]:
+    history = json.loads(history_json)
+    convo = "\n".join(f"{m.get('role', 'user')}: {m.get('content', '')}" for m in history[-8:])
+    data = _groq.chat_json(_CALMER_SYSTEM, convo, temperature=0.7, max_tokens=800, key=groq_key())
+    reply = str(data.get("reply", "")).strip()
+    if not reply:
+        raise ValueError("Calmer returned an empty reply")
+    return {"reply": reply, "thinking": str(data.get("thinking", "")).strip()}
+
+
+def calmer_reply(history: list[dict[str, str]]) -> dict[str, Any]:
+    """Calm-companion reply with a visible ``thinking`` step.
+
+    Returns ``{"reply", "thinking", "source": "groq"|"local", "crisis"}`` —
+    never raises; falls back to a hand-written calm reply when AI is off.
+    """
+    last = history[-1].get("content", "") if history else ""
+    try:
+        from mindsense.screening.crisis import text_crisis
+
+        crisis = text_crisis(last)
+    except Exception:  # noqa: BLE001
+        crisis = {"triggered": False}
+    if not _groq.enabled():
+        return {
+            "reply": _CALMER_FALLBACK,
+            "thinking": "Staying with them and offering one small grounding step.",
+            "source": "local",
+            "crisis": crisis,
+        }
+    try:
+        data = _cached_calmer(json.dumps(history, ensure_ascii=False))
+        return {**data, "source": "groq", "crisis": crisis}
+    except Exception:  # noqa: BLE001 - any failure → calm offline fallback
+        return {
+            "reply": _CALMER_FALLBACK,
+            "thinking": "The AI is unreachable; falling back to a steady reply.",
+            "source": "local",
+            "crisis": crisis,
+        }
+
+
+# --------------------------------------------------------------------------- #
+# Mood-lifting content suggestions
+# --------------------------------------------------------------------------- #
+_UPLIFT_SYSTEM = (
+    "You are Calmer inside MindSense. Offer gentle, uplifting content that could "
+    "lift someone's mood right now. Give exactly 4 items spanning different "
+    "kinds: one calming breath/grounding exercise, one tiny doable action, one "
+    "soothing thing to enjoy (music, nature, a short read), and one kind "
+    "affirmation. Keep each short and concrete, no medical advice. Respond with "
+    'JSON only: {"items": [{"kind": "<Breathing|Tiny action|Something to enjoy|'
+    'Kind words>", "title": "<short title>", "body": "<1-2 sentences>"}]}.'
+)
+
+_UPLIFT_FALLBACK: list[dict[str, str]] = [
+    {
+        "kind": "Breathing",
+        "title": "Box breathing (1 minute)",
+        "body": "Breathe in for 4, hold for 4, out for 4, hold for 4. Four slow rounds. It tells your body the danger has passed.",
+    },
+    {
+        "kind": "Tiny action",
+        "title": "Step outside for two minutes",
+        "body": "Daylight and a change of scene reset your nervous system. No destination needed — just the door and back.",
+    },
+    {
+        "kind": "Something to enjoy",
+        "title": "One song that feels like a hug",
+        "body": "Put on a track that used to make you feel good and listen to just that one, all the way through.",
+    },
+    {
+        "kind": "Kind words",
+        "title": "You are allowed to be a work in progress",
+        "body": "Feeling low is not a failure — it's information. You showed up here, and that already counts.",
+    },
+]
+
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def _cached_uplift(mood: int) -> dict[str, Any]:
+    data = _groq.chat_json(
+        _UPLIFT_SYSTEM,
+        f"The person rates their current mood {mood}/5 (1 = low, 5 = bright).",
+        temperature=0.8,
+        max_tokens=900,
+        key=groq_key(),
+    )
+    items = [
+        {
+            "kind": str(item.get("kind", "")).strip(),
+            "title": str(item.get("title", "")).strip(),
+            "body": str(item.get("body", "")).strip(),
+        }
+        for item in (data.get("items") or [])
+        if isinstance(item, dict) and item.get("title")
+    ]
+    if not items:
+        raise ValueError("no uplifting items returned")
+    return {"items": items[:6]}
+
+
+def uplift_content(mood: int = 3) -> dict[str, Any]:
+    """Four mood-lifting suggestions, tailored to ``mood`` (1-5). Never raises."""
+    if not _groq.enabled():
+        return {"items": _UPLIFT_FALLBACK, "source": "local"}
+    try:
+        return {**_cached_uplift(int(mood)), "source": "groq"}
+    except Exception:  # noqa: BLE001
+        return {"items": _UPLIFT_FALLBACK, "source": "local"}

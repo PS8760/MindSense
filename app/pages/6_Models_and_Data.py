@@ -17,7 +17,7 @@ for _p in (Path(__file__).resolve().parents[1], Path(__file__).resolve().parents
 import pandas as pd  # noqa: E402
 import streamlit as st  # noqa: E402
 
-from app.components import sidebar, theme  # noqa: E402
+from app.components import model_info, sidebar, theme  # noqa: E402
 from mindsense import inference  # noqa: E402
 from mindsense.utils.io import load_config, load_json, read_table, repo_path  # noqa: E402
 
@@ -106,14 +106,97 @@ def render_experiment(number: int, title: str, description: str) -> None:
             cols[i % 2].image(path, caption=path.name, width="stretch")
 
 
+def render_comparison() -> None:
+    """Ranked model comparison + the model the app actually serves today."""
+    st.markdown("### 🏆 Model comparison")
+    st.caption(
+        "Each experiment trains several model families, ranks them by a primary "
+        "metric on the held-out test split, and the best is served. Numbers are "
+        "read from `reports/metrics/` — never hand-written."
+    )
+    blocks = model_info.comparison_blocks()
+    if not blocks:
+        st.info("No metrics yet — run `make train`.")
+        return
+    for block in blocks:
+        st.markdown(f"#### {block['title']}")
+        st.caption(block["task"])
+        rows = block["rows"]
+        if block["kind"] == "classification":
+            frame = pd.DataFrame(
+                [
+                    {
+                        "Rank": r["rank"],
+                        "Model": model_info.display_name(r["key"]),
+                        "Accuracy": r["accuracy"],
+                        "Precision": r["macro_precision"],
+                        "Recall": r["macro_recall"],
+                        "F1 (macro)": r["macro_f1"],
+                        "Status": (
+                            "🏆 best" + (" · ✅ in use" if r["in_use"] else "")
+                            if r["best"] or r["in_use"]
+                            else ""
+                        ),
+                    }
+                    for r in rows
+                ]
+            )
+        else:
+            frame = pd.DataFrame(
+                [
+                    {
+                        "Rank": r["rank"],
+                        "Model": model_info.display_name(r["key"]),
+                        "RMSE (lower is better)": r["rmse_mean"],
+                        "R²": r["r2_mean"],
+                        "Status": (
+                            "🏆 best" + (" · ✅ in use" if r["in_use"] else "")
+                            if r["best"] or r["in_use"]
+                            else ""
+                        ),
+                    }
+                    for r in rows
+                ]
+            )
+        st.dataframe(
+            frame,
+            width="stretch",
+            hide_index=True,
+            column_config={
+                col: st.column_config.NumberColumn(format="%.3f")
+                for col in (
+                    "Accuracy",
+                    "Precision",
+                    "Recall",
+                    "F1 (macro)",
+                    "RMSE (lower is better)",
+                    "R²",
+                )
+            },
+        )
+        served = model_info.display_name(block["in_use"]) if block["in_use"] else "Groq AI"
+        if block["in_use"]:
+            st.success(f"✅ Currently used in the app: **{served}** — {block['source']}")
+        else:
+            st.info(
+                f"✅ Currently used in the app: **{served}** — {block['source']}. "
+                f"The best trained model (**{model_info.display_name(block['best'])}**) "
+                "takes over after `make train`."
+            )
+        st.write("")
+
+
 # --------------------------------------------------------------------------- #
 # ranked dataset table
 # --------------------------------------------------------------------------- #
-tab_datasets, *exp_tabs, tab_models = st.tabs(
-    ["📚 Ranked datasets"]
+tab_compare, tab_datasets, *exp_tabs, tab_models = st.tabs(
+    ["🏆 Model comparison", "📚 Ranked datasets"]
     + [tab for _n, (_t, _d, tab) in EXPERIMENTS.items()]
     + ["🤖 Models & fairness"]
 )
+
+with tab_compare:
+    render_comparison()
 
 with tab_datasets:
     st.markdown(

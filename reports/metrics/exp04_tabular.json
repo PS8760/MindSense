@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-09T01:06:25+00:00",
+  "generated": "2026-10-09T02:42:44+00:00",
   "seed": 42,
   "rows": {
     "train": 20406,
@@ -11,18 +11,24 @@
     {
       "model": "gradient_boosting",
       "accuracy": 0.8482,
+      "macro_precision": 0.8461,
+      "macro_recall": 0.8402,
       "macro_f1": 0.8427,
       "weighted_f1": 0.8475
     },
     {
       "model": "logistic",
       "accuracy": 0.8383,
+      "macro_precision": 0.8362,
+      "macro_recall": 0.8297,
       "macro_f1": 0.8323,
       "weighted_f1": 0.8375
     },
     {
       "model": "random_forest",
       "accuracy": 0.8306,
+      "macro_precision": 0.8272,
+      "macro_recall": 0.8229,
       "macro_f1": 0.8248,
       "weighted_f1": 0.83
     }

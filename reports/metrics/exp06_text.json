@@ -1,38 +1,44 @@
 {
-  "generated": "2026-10-09T01:09:04+00:00",
+  "generated": "2026-10-09T02:43:21+00:00",
   "seed": 42,
   "text_column": "text_norm",
-  "vocabulary": 31,
+  "vocabulary": 60000,
   "rows": {
-    "train": 30,
-    "val": 30,
-    "test": 30
+    "train": 35590,
+    "val": 7626,
+    "test": 7627
   },
-  "best_model": "naive_bayes",
+  "best_model": "linear_svc",
   "ranking": [
     {
-      "model": "naive_bayes",
-      "accuracy": 1.0,
-      "macro_f1": 1.0,
-      "weighted_f1": 1.0
+      "model": "linear_svc",
+      "accuracy": 0.744,
+      "macro_precision": 0.7603,
+      "macro_recall": 0.6468,
+      "macro_f1": 0.6839,
+      "weighted_f1": 0.7374
     },
     {
       "model": "logistic",
-      "accuracy": 1.0,
-      "macro_f1": 1.0,
-      "weighted_f1": 1.0
+      "accuracy": 0.7476,
+      "macro_precision": 0.8006,
+      "macro_recall": 0.6121,
+      "macro_f1": 0.6629,
+      "weighted_f1": 0.738
     },
     {
-      "model": "linear_svc",
-      "accuracy": 1.0,
-      "macro_f1": 1.0,
-      "weighted_f1": 1.0
+      "model": "naive_bayes",
+      "accuracy": 0.5901,
+      "macro_precision": 0.7142,
+      "macro_recall": 0.3273,
+      "macro_f1": 0.3361,
+      "weighted_f1": 0.5561
     }
   ],
   "test": {
-    "accuracy": 1.0,
-    "macro_f1": 1.0,
-    "weighted_f1": 1.0,
-    "n": 30
+    "accuracy": 0.75,
+    "macro_f1": 0.6859,
+    "weighted_f1": 0.7445,
+    "n": 7627
   }
 }

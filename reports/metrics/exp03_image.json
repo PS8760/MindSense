@@ -3,32 +3,12 @@
   "version": "exp03-v1",
   "device": "mps",
   "seed": 42,
-  "pretrained": true,
-  "embed_dim": 1280,
   "data_sources": {
     "real": 35887
   },
-  "train_counts": {
-    "angry": 3596,
-    "disgust": 392,
-    "fear": 3687,
-    "happy": 6493,
-    "sad": 4347,
-    "surprise": 2854,
-    "neutral": 4469
-  },
-  "class_weights": {
-    "0": 0.4796329776665357,
-    "1": 4.399898437981792,
-    "2": 0.4677950061537462,
-    "3": 0.26563378833957524,
-    "4": 0.3967702295120456,
-    "5": 0.6043308296036658,
-    "6": 0.3859387307426409
-  },
   "comparison": {
     "logreg": {
-      "fit_seconds": 92.8,
+      "fit_seconds": 45.13,
       "val": {
         "accuracy": 0.497,
         "macro_precision": 0.4545,
@@ -83,7 +63,7 @@
       }
     },
     "forest": {
-      "fit_seconds": 59.02,
+      "fit_seconds": 41.37,
       "val": {
         "accuracy": 0.4866,
         "macro_precision": 0.554,
@@ -138,7 +118,7 @@
       }
     },
     "xgboost": {
-      "fit_seconds": 588.14,
+      "fit_seconds": 1280.92,
       "val": {
         "accuracy": 0.5361,
         "macro_precision": 0.5979,
@@ -193,7 +173,7 @@
       }
     },
     "mlp": {
-      "fit_seconds": 55.6,
+      "fit_seconds": 31.9,
       "val": {
         "accuracy": 0.5423,
         "macro_precision": 0.5003,
@@ -249,219 +229,6 @@
     }
   },
   "best_by_test_macro_f1": "mlp",
-  "test": {
-    "accuracy": 0.541,
-    "macro_precision": 0.5051,
-    "macro_recall": 0.5359,
-    "macro_f1": 0.5157,
-    "weighted_f1": 0.5374,
-    "per_class_recall": {
-      "angry": 0.4175,
-      "disgust": 0.5856,
-      "fear": 0.3721,
-      "happy": 0.7187,
-      "sad": 0.3857,
-      "surprise": 0.7148,
-      "neutral": 0.5572
-    },
-    "confusion_matrix": [
-      [
-        400,
-        23,
-        111,
-        113,
-        130,
-        42,
-        139
-      ],
-      [
-        16,
-        65,
-        1,
-        13,
-        5,
-        5,
-        6
-      ],
-      [
-        126,
-        24,
-        381,
-        79,
-        165,
-        113,
-        136
-      ],
-      [
-        84,
-        17,
-        71,
-        1275,
-        103,
-        58,
-        166
-      ],
-      [
-        159,
-        28,
-        153,
-        156,
-        481,
-        26,
-        244
-      ],
-      [
-        41,
-        5,
-        73,
-        43,
-        20,
-        594,
-        55
-      ],
-      [
-        77,
-        16,
-        99,
-        135,
-        168,
-        51,
-        687
-      ]
-    ],
-    "support": {
-      "angry": 958,
-      "disgust": 111,
-      "fear": 1024,
-      "happy": 1774,
-      "sad": 1247,
-      "surprise": 831,
-      "neutral": 1233
-    },
-    "n": 7178
-  },
-  "mlp_history": [
-    {
-      "epoch": 1,
-      "train_loss": 1.6508,
-      "train_acc": 0.3621,
-      "seconds": 3.5
-    },
-    {
-      "epoch": 2,
-      "train_loss": 1.4574,
-      "train_acc": 0.4452,
-      "seconds": 3.5
-    },
-    {
-      "epoch": 3,
-      "train_loss": 1.3517,
-      "train_acc": 0.4828,
-      "seconds": 2.5
-    },
-    {
-      "epoch": 4,
-      "train_loss": 1.2872,
-      "train_acc": 0.501,
-      "seconds": 2.5
-    },
-    {
-      "epoch": 5,
-      "train_loss": 1.2298,
-      "train_acc": 0.5195,
-      "seconds": 2.1
-    },
-    {
-      "epoch": 6,
-      "train_loss": 1.1756,
-      "train_acc": 0.5389,
-      "seconds": 2.6
-    },
-    {
-      "epoch": 7,
-      "train_loss": 1.1425,
-      "train_acc": 0.551,
-      "seconds": 2.2
-    },
-    {
-      "epoch": 8,
-      "train_loss": 1.0868,
-      "train_acc": 0.5674,
-      "seconds": 2.8
-    },
-    {
-      "epoch": 9,
-      "train_loss": 1.0466,
-      "train_acc": 0.5838,
-      "seconds": 2.8
-    },
-    {
-      "epoch": 10,
-      "train_loss": 1.0061,
-      "train_acc": 0.5992,
-      "seconds": 2.8
-    },
-    {
-      "epoch": 11,
-      "train_loss": 0.9638,
-      "train_acc": 0.6155,
-      "seconds": 2.9
-    },
-    {
-      "epoch": 12,
-      "train_loss": 0.9299,
-      "train_acc": 0.6299,
-      "seconds": 3.7
-    },
-    {
-      "epoch": 13,
-      "train_loss": 0.8992,
-      "train_acc": 0.644,
-      "seconds": 2.6
-    },
-    {
-      "epoch": 14,
-      "train_loss": 0.8596,
-      "train_acc": 0.6583,
-      "seconds": 2.9
-    },
-    {
-      "epoch": 15,
-      "train_loss": 0.8244,
-      "train_acc": 0.6798,
-      "seconds": 3.4
-    },
-    {
-      "epoch": 16,
-      "train_loss": 0.7931,
-      "train_acc": 0.6881,
-      "seconds": 2.6
-    },
-    {
-      "epoch": 17,
-      "train_loss": 0.7596,
-      "train_acc": 0.7026,
-      "seconds": 2.4
-    },
-    {
-      "epoch": 18,
-      "train_loss": 0.7287,
-      "train_acc": 0.7104,
-      "seconds": 2.6
-    },
-    {
-      "epoch": 19,
-      "train_loss": 0.6962,
-      "train_acc": 0.7303,
-      "seconds": 1.8
-    },
-    {
-      "epoch": 20,
-      "train_loss": 0.6695,
-      "train_acc": 0.7402,
-      "seconds": 3.4
-    }
-  ],
   "onnx": {
     "path": "/Users/pranavghodke/Desktop/Honors_Mini_Project/models/face_emotion.onnx",
     "size_mb": 10.97,
@@ -469,5 +236,6 @@
     "parity_ok": true,
     "opset": 17
   },
-  "metadata": "/Users/pranavghodke/Desktop/Honors_Mini_Project/models/metadata.json"
+  "wall_seconds": 1451.4,
+  "generated_at": "2026-10-09T02:36:48.477151+00:00"
 }

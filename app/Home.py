@@ -36,11 +36,13 @@ theme.hero(
     gradient_word="calmer",
 )
 
-cta1, cta2, _pad = st.columns([1.2, 1.2, 2])
+cta1, cta2, cta3, _pad = st.columns([1.2, 1.2, 1.2, 1.4])
 with cta1:
     nav.page_link("pages/1_Check_In.py", label="Start your check-in", icon="📝")
 with cta2:
     nav.page_link("pages/2_Talk_it_Out.py", label="Talk it out instead", icon="💬")
+with cta3:
+    nav.page_link("pages/8_Calmer.py", label="Meet Calmer", icon="🫧")
 
 if fusion.crisis_flag():
     widgets.crisis_banner(fusion.crisis_flag()["reasons"])

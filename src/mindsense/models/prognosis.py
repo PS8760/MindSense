@@ -12,6 +12,7 @@ sklearn-only (no xgboost) so it is safe to run in-process alongside torch.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
@@ -67,7 +68,11 @@ def _evaluate(best_estimator, x_test, y_test) -> dict[str, Any]:
 
 
 def train_prognosis(
-    *, quick: bool = False, seed: int = GLOBAL_SEED, data: pd.DataFrame | None = None
+    *,
+    quick: bool = False,
+    seed: int = GLOBAL_SEED,
+    data: pd.DataFrame | None = None,
+    out_dir: Path | None = None,
 ) -> dict[str, Any]:
     """Train and rank the DASS-42 prognosis regressors; return test metrics."""
     df = data if data is not None else pd.read_parquet(
@@ -135,7 +140,10 @@ def train_prognosis(
         ).to_dict("records"),
         "test": test_metric,
     }
-    save_json(payload, repo_path("reports", "metrics", "exp07_prognosis.json"))
+    save_json(
+        payload,
+        (out_dir or repo_path("reports", "metrics")) / "exp07_prognosis.json",
+    )
     return {
         "best": ranking.best,
         "ranking": payload["ranking"],

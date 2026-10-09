@@ -37,8 +37,8 @@ def _frame(n: int) -> pd.DataFrame:
     return pd.DataFrame({"text_norm": text[:n], "label": label[:n], "split": split})
 
 
-def test_train_text_ranks_models_and_reports_test_metrics() -> None:
-    result = train_text(quick=True, data=_frame(90))
+def test_train_text_ranks_models_and_reports_test_metrics(tmp_path) -> None:
+    result = train_text(quick=True, data=_frame(90), out_dir=tmp_path)
     assert result["best"] in {"naive_bayes", "logistic", "linear_svc"}
     assert result["test"]["accuracy"] >= 0.0
     assert len(result["ranking"]) == 3

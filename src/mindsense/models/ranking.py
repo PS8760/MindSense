@@ -102,6 +102,8 @@ def rank_classifiers(
         )
         rows[name] = {
             "accuracy": metric["accuracy"],
+            "macro_precision": metric["macro_precision"],
+            "macro_recall": metric["macro_recall"],
             "macro_f1": metric["macro_f1"],
             "weighted_f1": metric["weighted_f1"],
         }

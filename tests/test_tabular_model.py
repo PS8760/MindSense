@@ -51,8 +51,8 @@ def test_build_features_imputes_and_one_hots() -> None:
     assert any(c.startswith("gender_") for c in x.columns)
 
 
-def test_train_tabular_ranks_models_and_reports_test_metrics() -> None:
-    result = train_tabular(quick=True, data=_frame(90))
+def test_train_tabular_ranks_models_and_reports_test_metrics(tmp_path) -> None:
+    result = train_tabular(quick=True, data=_frame(90), out_dir=tmp_path)
     assert result["best"] in {"logistic", "random_forest", "gradient_boosting"}
     assert result["test"]["n"] == len(_frame(90)[_frame(90)["split"] == "test"])
     assert len(result["ranking"]) == 3
