@@ -13,14 +13,11 @@ text unless the user explicitly opts in on the text page.
 from __future__ import annotations
 
 import json
-import os
 from typing import Any
 
-import requests
 import streamlit as st
 
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-_MODELS = ("openai/gpt-oss-120b", "openai/gpt-oss-20b")
+from mindsense import groq as _groq
 
 _SYSTEM = (
     "You are MindSense, a warm, plain-language wellness companion inside a "
@@ -54,68 +51,19 @@ verified helplines."""
 
 def groq_key() -> str | None:
     """Resolve the Groq API key from the environment or the repo ``.env``."""
-    key = os.environ.get("GROQ_API_KEY", "").strip()
-    if key:
-        return key
-    try:
-        from dotenv import load_dotenv
-
-        from mindsense.utils.io import repo_path
-
-        env_path = repo_path(".env")
-        if env_path.exists():
-            load_dotenv(env_path, override=False)
-            return os.environ.get("GROQ_API_KEY", "").strip() or None
-    except Exception:  # noqa: BLE001 - key discovery must never crash the UI
-        return None
-    return None
+    return _groq.groq_key()
 
 
 def _chat(system: str, user: str, *, temperature: float = 0.6, max_tokens: int = 1024) -> str:
-    """One Groq chat-completions call; tries both models before raising.
+    """One Groq chat-completions call, delegated to :mod:`mindsense.groq`.
 
-    ``gpt-oss`` models are *reasoning* models: they spend tokens on the
-    ``reasoning`` field before producing ``content``. A small ``max_tokens``
-    budget is exhausted by reasoning, leaving ``content`` empty and the call
-    looking like a failure. We therefore give enough budget for reasoning +
-    the reply, and fall back to the ``reasoning`` text when ``content`` is
-    still empty.
+    The key is resolved here (rather than inside the client) so tests and the
+    offline fallback can stub ``groq_key`` without touching the network.
     """
     key = groq_key()
     if not key:
         raise RuntimeError("GROQ_API_KEY not configured")
-    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
-    payload_base = {
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-        "temperature": temperature,
-        "max_tokens": max_tokens,
-    }
-    last_error = "groq request failed"
-    for model in _MODELS:
-        try:
-            response = requests.post(
-                GROQ_URL,
-                headers=headers,
-                json={**payload_base, "model": model},
-                timeout=25,
-            )
-        except requests.RequestException as exc:  # network down → offline path
-            raise RuntimeError(f"network error: {exc}") from exc
-        if response.status_code == 200:
-            message = response.json()["choices"][0]["message"]
-            content = (message.get("content") or "").strip()
-            if not content:  # reasoning model used its budget before the answer
-                content = (message.get("reasoning") or "").strip()
-            if content:
-                return content
-        last_error = f"HTTP {response.status_code}: {response.text[:180]}"
-        if response.status_code in (400, 404):  # unknown model → try the other
-            continue
-        break
-    raise RuntimeError(last_error)
+    return _groq.chat(system, user, temperature=temperature, max_tokens=max_tokens, key=key)
 
 
 # --------------------------------------------------------------------------- #

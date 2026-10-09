@@ -24,6 +24,7 @@ Contract (also recorded in ``docs/DECISIONS.md``)
 from __future__ import annotations
 
 import functools
+import json
 import os
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -31,6 +32,7 @@ from typing import Any
 
 import pandas as pd
 
+from mindsense import groq
 from mindsense.utils.io import load_config, load_json, repo_path
 
 __all__ = [
@@ -55,7 +57,24 @@ _DEFAULT_ARTIFACTS = {
     "face": "face_emotion.onnx",
 }
 
-_TRAIN_HINT = "Model not trained yet — run ``make train``."
+_TRAIN_HINT = (
+    "No local model artifact yet — add a Groq API key (``GROQ_API_KEY``) for AI "
+    "analysis, or run ``make train`` to build the model."
+)
+_FACE_HINT = "Face model not built — run ``make train`` to produce ``models/face_emotion.onnx``."
+
+#: The seven mental-state labels the text screener uses (Experiment 7).
+_TEXT_CLASSES = (
+    "Anxiety",
+    "Depression",
+    "Stress",
+    "Suicidal",
+    "Bipolar",
+    "Personality disorder",
+    "Normal",
+)
+#: DASS depression bands the severity estimate maps onto.
+_DASS_BANDS = ("Normal", "Mild", "Moderate", "Severe", "Extremely Severe")
 
 #: Feature order used when metadata does not specify one (matches
 #: ``mindsense.data.harmonize.HARMONIZED_COLUMNS`` minus ids/labels).
@@ -136,6 +155,8 @@ def _artifact_path(key: str) -> Path | None:
 def availability() -> dict[str, dict[str, Any]]:
     """Status of every module, for the Home page status strip and Lab Results."""
     status: dict[str, dict[str, Any]] = {}
+    groq_on = _groq_enabled()
+    groq_served = {"risk", "intervention", "prognosis", "text"}  # face stays ONNX-only
     for key, label in (
         ("risk", "Lifestyle risk model"),
         ("intervention", "Intervention-likelihood model"),
@@ -144,11 +165,21 @@ def availability() -> dict[str, dict[str, Any]]:
         ("face", "Face emotion cue model"),
     ):
         path = _artifact_path(key)
+        if path is not None:
+            available, detail, version = True, f"artifact: {path.name}", _model_version(key)
+        elif groq_on and key in groq_served:
+            available, detail, version = (
+                True,
+                "AI backend: Groq (no local artifact)",
+                _groq_version(),
+            )
+        else:
+            available, detail, version = False, _TRAIN_HINT, _model_version(key)
         status[key] = {
             "label": label,
-            "available": path is not None,
-            "detail": f"artifact: {path.name}" if path else _TRAIN_HINT,
-            "version": _model_version(key),
+            "available": available,
+            "detail": detail,
+            "version": version,
         }
     try:
         import mindsense.nlp.entities  # noqa: F401
@@ -262,6 +293,169 @@ def _contributions(model: Any, row: pd.DataFrame) -> list[dict[str, Any]]:
 
 
 # --------------------------------------------------------------------------- #
+# optional Groq backend (used when no local artifact is available)
+# --------------------------------------------------------------------------- #
+def _groq_enabled() -> bool:
+    return groq.enabled()
+
+
+def _groq_version() -> str:
+    return f"groq:{groq.MODELS[0]}"
+
+
+def _jsonable(value: Any) -> Any:
+    return None if isinstance(value, float) and pd.isna(value) else value
+
+
+def _clamp01(value: Any) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return 0.0
+    return min(max(number, 0.0), 1.0)
+
+
+def _clean_contributions(items: Any, *, limit: int = 8) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for item in items or []:
+        if not isinstance(item, Mapping):
+            continue
+        try:
+            contribution = float(item.get("contribution", 0.0))
+        except (TypeError, ValueError):
+            continue
+        out.append(
+            {
+                "feature": str(item.get("feature", "feature")),
+                "value": _jsonable(item.get("value")),
+                "contribution": contribution,
+            }
+        )
+    out.sort(key=lambda entry: abs(entry["contribution"]), reverse=True)
+    return out[:limit]
+
+
+def _clean_words(items: Any, *, limit: int = 8) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for item in items or []:
+        if not isinstance(item, Mapping):
+            continue
+        try:
+            weight = float(item.get("weight", 0.0))
+        except (TypeError, ValueError):
+            continue
+        word = str(item.get("word", "")).strip()
+        if word:
+            out.append({"word": word, "weight": weight})
+    out.sort(key=lambda entry: abs(entry["weight"]), reverse=True)
+    return out[:limit]
+
+
+def _groq_risk(features: Mapping[str, Any]) -> dict[str, Any]:
+    payload = {k: _jsonable(v) for k, v in features.items()}
+    system = (
+        "You are MindSense, a non-diagnostic wellness screening assistant. Given "
+        "lifestyle features, estimate a single 'concern' probability in [0,1] that the "
+        "person is in an elevated mental-health risk group, and name the drivers. "
+        "Respond with JSON only, no prose, in exactly this shape: "
+        '{"probability": <number 0-1>, "contributions": [{"feature": <string>, '
+        '"value": <number|null>, "contribution": <number>}]}. Give 3-6 contributions; '
+        "positive contribution raises concern, negative lowers it. Use only the "
+        "provided feature names."
+    )
+    user = "Features:\n" + json.dumps(payload, ensure_ascii=False, default=str)
+    data = groq.chat_json(system, user, temperature=0.2)
+    probability = _clamp01(data.get("probability"))
+    tier, thresholds = _tier(probability)
+    return {
+        "available": True,
+        "probability": probability,
+        "tier": tier,
+        "thresholds": thresholds,
+        "contributions": _clean_contributions(data.get("contributions")),
+        "model_version": _groq_version(),
+        "source": "groq",
+        "input_echo": payload,
+    }
+
+
+def _groq_intervention(features: Mapping[str, Any]) -> dict[str, Any]:
+    payload = {k: _jsonable(v) for k, v in features.items()}
+    system = (
+        "You are MindSense, a non-diagnostic wellness screening assistant. Given "
+        "lifestyle features, estimate in [0,1] the likelihood that the person would "
+        "benefit from a supportive mental-health intervention. Respond with JSON only: "
+        '{"likelihood": <number 0-1>}.'
+    )
+    user = "Features:\n" + json.dumps(payload, ensure_ascii=False, default=str)
+    data = groq.chat_json(system, user, temperature=0.2)
+    return {
+        "available": True,
+        "likelihood": _clamp01(data.get("likelihood")),
+        "model_version": _groq_version(),
+        "source": "groq",
+        "warning": "Associational model — not evidence that changing a factor causes change.",
+    }
+
+
+def _groq_severity(
+    values: Sequence[int], demographics: Mapping[str, Any] | None, selected: Sequence[int]
+) -> dict[str, Any]:
+    payload = {
+        "answers": list(values),
+        "answer_scale": "each item 0-3 (0 did not apply .. 3 very much)",
+        **dict(demographics or {}),
+    }
+    system = (
+        "You are MindSense, a non-diagnostic screening assistant. Given a compact "
+        "depression-subscale screener (each item 0-3) and optional demographics, choose "
+        "the most likely severity band from exactly "
+        f"{list(_DASS_BANDS)} and a confidence in [0,1]. Respond with JSON only: "
+        '{"band": <string>, "confidence": <number 0-1>}.'
+    )
+    user = json.dumps(payload, ensure_ascii=False, default=str)
+    data = groq.chat_json(system, user, temperature=0.2)
+    band = str(data.get("band", "Normal")).strip()
+    if band not in _DASS_BANDS:
+        band = next((b for b in _DASS_BANDS if b.lower() in band.lower()), "Normal")
+    return {
+        "available": True,
+        "band": band,
+        "confidence": _clamp01(data.get("confidence")),
+        "selected_items": list(selected),
+        "model_version": _groq_version(),
+        "source": "groq",
+    }
+
+
+def _groq_text(text: str) -> dict[str, Any]:
+    system = (
+        "You are MindSense, a non-diagnostic mental-health text screener. Classify the "
+        "message into exactly one of these labels: "
+        + ", ".join(_TEXT_CLASSES)
+        + '. Respond with JSON only: {"top_class": <label>, "probabilities": {<label>: '
+        '<number 0-1>, ... for all labels summing to ~1}, "top_words": '
+        '[{"word": <string>, "weight": <number>}]}. Provide 5-8 top_words taken from the '
+        "message; positive weight supports top_class, negative counts against it."
+    )
+    data = groq.chat_json(system, text, temperature=0.2)
+    raw = data.get("probabilities")
+    raw = raw if isinstance(raw, Mapping) else {}
+    probabilities = {cls: round(_clamp01(raw.get(cls, 0.0)), 4) for cls in _TEXT_CLASSES}
+    top_class = str(data.get("top_class", "")).strip()
+    if top_class not in probabilities:
+        top_class = max(probabilities, key=probabilities.__getitem__)
+    return {
+        "available": True,
+        "top_class": top_class,
+        "probabilities": probabilities,
+        "top_words": _clean_words(data.get("top_words")),
+        "model_version": _groq_version(),
+        "source": "groq",
+    }
+
+
+# --------------------------------------------------------------------------- #
 # public API
 # --------------------------------------------------------------------------- #
 def predict_risk(features: Mapping[str, Any]) -> dict[str, Any]:
@@ -273,6 +467,11 @@ def predict_risk(features: Mapping[str, Any]) -> dict[str, Any]:
     _validate_risk_features(features)
     model = _load("risk")
     if model is None:
+        if _groq_enabled():
+            try:
+                return _groq_risk(features)
+            except Exception as exc:  # noqa: BLE001 - fall back, never crash the page
+                return _unavailable(f"AI risk analysis failed ({type(exc).__name__})")
         return _unavailable()
     row = _risk_row(features)
     try:
@@ -301,6 +500,11 @@ def predict_intervention(features: Mapping[str, Any]) -> dict[str, Any]:
     _validate_risk_features(features)
     model = _load("intervention")
     if model is None:
+        if _groq_enabled():
+            try:
+                return _groq_intervention(features)
+            except Exception as exc:  # noqa: BLE001
+                return _unavailable(f"AI intervention analysis failed ({type(exc).__name__})")
         return _unavailable()
     row = _risk_row(features)
     try:
@@ -345,6 +549,11 @@ def predict_severity(
 
     model = _load("prognosis")
     if model is None:
+        if _groq_enabled():
+            try:
+                return _groq_severity(values, demographics, selected)
+            except Exception as exc:  # noqa: BLE001
+                return _unavailable(f"AI severity analysis failed ({type(exc).__name__})")
         return _unavailable()
     payload = pd.DataFrame([{"items": values, **dict(demographics or {})}])
     try:
@@ -378,7 +587,7 @@ def prognosis_info() -> dict[str, Any]:
     return {
         "selected_items": selected,
         "budget": budget,
-        "model_available": _artifact_path("prognosis") is not None,
+        "model_available": _artifact_path("prognosis") is not None or _groq_enabled(),
     }
 
 
@@ -392,6 +601,16 @@ def analyze_text(text: str) -> dict[str, Any]:
 
     model = _load("text")
     if model is None:
+        if _groq_enabled():
+            try:
+                result = _groq_text(text)
+            except Exception as exc:  # noqa: BLE001
+                return {
+                    **_unavailable(f"AI text analysis failed ({type(exc).__name__})"),
+                    "crisis": text_crisis(text),
+                }
+            result["crisis"] = text_crisis(text, class_probabilities=result["probabilities"])
+            return result
         return {**_unavailable(), "crisis": text_crisis(text)}
     try:
         proba = model.predict_proba([text])[0]
@@ -494,7 +713,7 @@ def analyze_face(image: Any) -> dict[str, Any]:
         return _unavailable("Face module is switched off — start the app with ``ENABLE_FACE=1``.")
     path = _artifact_path("face")
     if path is None:
-        return _unavailable(_TRAIN_HINT)
+        return _unavailable(_FACE_HINT)
     try:
         import cv2
         import numpy as np  # noqa: F401

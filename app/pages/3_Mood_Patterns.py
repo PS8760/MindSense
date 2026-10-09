@@ -56,8 +56,8 @@ else:
     st.caption(
         "The trained compact screener isn't available yet — showing the "
         "**official DASS depression subscale** (14 items, public-domain instrument) "
-        "with reference scoring instead. Run ``make train`` to enable the model "
-        "estimate with confidence."
+        "with reference scoring instead. The **model estimate** still runs on the "
+        "AI backend (Groq); run ``make train`` for the offline model."
     )
     item_numbers = DEPRESSION_ITEMS
 

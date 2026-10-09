@@ -34,7 +34,8 @@ python scripts/smoke_app.py
 | `DEFAULT_REGION` | `India` | Default helpline region in the sidebar |
 | `APP_ENV` | `local` | `local \| ci \| production` |
 | `FORCE_SYNTHETIC_BANNER` | `0` | Louder synthetic-data banners in CI |
-| `GROQ_API_KEY` | — | Optional; enables Groq suggestions (offline fallback otherwise) |
+| `GROQ_API_KEY` | — | Enables Groq AI: check-in suggestions **and** the risk/intervention/severity/text features when no local artifact is present (offline fallback otherwise) |
+| `MINDSENSE_DISABLE_GROQ` | `0` | `1` forces local/offline-only inference (set suite-wide by the tests) |
 
 ## Model experiments (`make train`)
 
@@ -54,6 +55,12 @@ mindsense.models.train_all --help` lists flags. The image zoo fits its
 sklearn/XGBoost heads in a **torch-free subprocess** (`mindsense.models.zoo`)
 so torch + XGBoost never share a process (macOS OpenMP/liblomp crash — see
 `docs/DECISIONS.md`).
+
+Only `models/face_emotion.onnx` + `models/metadata.json` are committed, so a
+fresh clone/deploy has no risk/intervention/severity/text artifacts. Those
+features then run on the **Groq AI backend** (set `GROQ_API_KEY`) and report
+`source="groq"`; once `make train` produces local artifacts they take over
+(local-first). `mindsense.groq` is the shared, streamlit/torch-free client.
 
 ## Theme
 
