@@ -83,8 +83,8 @@ def test_groq_availability_reports_ready(monkeypatch: pytest.MonkeyPatch) -> Non
     monkeypatch.setattr(groq, "enabled", lambda: True)
     status = inference.availability()
     assert status["risk"]["available"] is True
-    assert "Groq" in status["risk"]["detail"]
-    assert "Groq" not in status["face"]["detail"]  # face stays ONNX-only
+    assert "AI assistant" in status["risk"]["detail"]
+    assert "AI assistant" not in status["face"]["detail"]  # face stays ONNX-only
 
 
 def test_groq_failure_falls_back_never_raises(monkeypatch: pytest.MonkeyPatch) -> None:

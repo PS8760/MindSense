@@ -57,7 +57,7 @@ else:
         "The trained compact screener isn't available yet — showing the "
         "**official DASS depression subscale** (14 items, public-domain instrument) "
         "with reference scoring instead. The **model estimate** still runs on the "
-        "AI backend (Groq); run ``make train`` for the offline model."
+        "AI backend; run ``make train`` for the offline model."
     )
     item_numbers = DEPRESSION_ITEMS
 

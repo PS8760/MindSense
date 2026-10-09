@@ -174,7 +174,7 @@ def render_comparison() -> None:
                 )
             },
         )
-        served = model_info.display_name(block["in_use"]) if block["in_use"] else "Groq AI"
+        served = model_info.display_name(block["in_use"]) if block["in_use"] else "AI assistant"
         if block["in_use"]:
             st.success(f"✅ Currently used in the app: **{served}** — {block['source']}")
         else:

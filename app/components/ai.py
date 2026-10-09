@@ -239,7 +239,7 @@ def render_suggestions(context: dict[str, Any]) -> dict[str, str]:
     st.markdown(result["text"])
     if result["source"] == "groq":
         st.caption(
-            "✨ Written just now by an AI assistant (Groq · Llama) from only the "
+            "✨ Written just now by an AI assistant from only the "
             "numbers above — nothing stored, no personal identity sent."
         )
     else:

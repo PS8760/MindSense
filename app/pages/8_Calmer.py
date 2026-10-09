@@ -66,7 +66,7 @@ with st.container(border=True):
                 st.markdown(f"**{kind} · {item['title']}**")
                 st.caption(item["body"])
         if uplift.get("source") == "groq":
-            st.caption("✨ Fresh ideas from the AI assistant (Groq).")
+            st.caption("✨ Fresh ideas from your AI assistant.")
         else:
             st.caption("📴 Offline ideas — always here, written by us.")
 
@@ -104,7 +104,7 @@ if prompt:
             status.update(label="Calmer", state="complete", expanded=False)
         st.markdown(result["reply"])
         if result.get("source") == "groq":
-            st.caption("✨ Calmer is an AI companion (Groq) — supportive, not a diagnosis.")
+            st.caption("✨ Calmer is an AI companion — supportive, not a diagnosis.")
         else:
             st.caption("📴 Offline reply — a steady voice is always here.")
     history.append({"role": "assistant", "content": result["reply"]})

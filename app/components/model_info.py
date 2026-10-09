@@ -126,7 +126,7 @@ def comparison_blocks() -> list[dict[str, Any]]:
         if info.get("available") and not served_by_groq:
             in_use, source = best, f"local artifact · {info.get('version', '')}".strip(" ·")
         elif served_by_groq:
-            in_use, source = None, "Groq AI backend (no local artifact shipped)"
+            in_use, source = None, "AI assistant (no local artifact shipped)"
         else:
             in_use, source = None, "not configured"
         for row in rows:
@@ -153,7 +153,7 @@ def current_model_summary() -> list[dict[str, str]]:
     """One line per experiment: which model answers in the app right now."""
     out: list[dict[str, str]] = []
     for block in comparison_blocks():
-        served = display_name(block["in_use"]) if block["in_use"] else "Groq AI"
+        served = display_name(block["in_use"]) if block["in_use"] else "AI assistant"
         out.append(
             {
                 "task": block["title"],

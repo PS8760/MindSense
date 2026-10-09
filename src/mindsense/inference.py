@@ -58,8 +58,8 @@ _DEFAULT_ARTIFACTS = {
 }
 
 _TRAIN_HINT = (
-    "No local model artifact yet — add a Groq API key (``GROQ_API_KEY``) for AI "
-    "analysis, or run ``make train`` to build the model."
+    "No local model artifact yet — enable the AI assistant, or run ``make train`` "
+    "to build the model."
 )
 _FACE_HINT = "Face model not built — run ``make train`` to produce ``models/face_emotion.onnx``."
 
@@ -170,7 +170,7 @@ def availability() -> dict[str, dict[str, Any]]:
         elif groq_on and key in groq_served:
             available, detail, version = (
                 True,
-                "AI backend: Groq (no local artifact)",
+                "AI assistant (no local artifact)",
                 _groq_version(),
             )
         else:
@@ -706,10 +706,11 @@ def _normalise_entities(result: Any) -> list[dict[str, Any]]:
 def analyze_face(image: Any) -> dict[str, Any]:
     """Face crop → emotion probabilities + mood cue (Exp 3, ONNX, optional).
 
-    Requires ``ENABLE_FACE=1`` **and** the ``models/face_emotion.onnx``
-    artifact; otherwise returns ``available=False`` with the exact reason.
+    Enabled by default; set ``ENABLE_FACE=0`` to opt out. Requires the
+    ``models/face_emotion.onnx`` artifact; otherwise returns ``available=False``
+    with the exact reason.
     """
-    if os.environ.get("ENABLE_FACE", "0") != "1":
+    if os.environ.get("ENABLE_FACE", "1") != "1":
         return _unavailable("Face module is switched off — start the app with ``ENABLE_FACE=1``.")
     path = _artifact_path("face")
     if path is None:

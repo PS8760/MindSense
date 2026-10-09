@@ -151,7 +151,7 @@ current_text = str(st.session_state.get("ms_text_input", "")).strip()
 st.subheader("A gentle reflection")
 st.caption(
     "Optional — pressing the button shares **only this text** with the "
-    "Groq AI assistant (nothing is stored). Skip it if you'd rather not."
+    "AI assistant (nothing is stored). Skip it if you'd rather not."
 )
 reflect = st.button(
     "✨ Reflect on what I wrote",
@@ -166,7 +166,7 @@ if st.session_state.get("ms_reflection"):
     note = st.session_state["ms_reflection"]
     st.markdown(note["text"])
     st.caption(
-        "✨ AI-generated reflection (Groq · Llama) — guidance, not advice or diagnosis."
+        "✨ AI-generated reflection — guidance, not advice or diagnosis."
         if note["source"] == "groq"
         else "📴 Offline reflection (AI unavailable right now)."
     )
