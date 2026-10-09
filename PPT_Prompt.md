@@ -53,11 +53,11 @@ length. Use clear, simple, professional English throughout.
 7. **Performance Evaluation — Comparison of Every Model** — one wide table listing **every model of every experiment** with Accuracy, Precision, Recall, F1 (classification) and RMSE/R² (regression). Mark the best model in each experiment.
 8. **Performance Evaluation — Comparison Charts** — **include the model comparison charts** here (see chart rules below): one grouped bar chart of **macro-F1 per model for each classification experiment (Exp 03, 04, 06)** and one bar chart of **RMSE per model for Exp 07**. Best bar highlighted in the accent colour.
 9. **Deployed Model & AI Assistant** — which model is shipped (image MLP → ONNX) and that the AI assistant is used **only** for check-in suggestions and Calmer, with offline fallbacks.
-9. **Engineering Rigor & Quality** — 142 tests pass, ruff clean, notebook smoke, CI docker build; the macOS OpenMP subprocess-isolation fix (3 lines max).
-10. **Deployment** — Docker image, HF Spaces / Streamlit Cloud, graceful offline behaviour.
-11. **Ethics & Limitations** — non-diagnostic, synthetic fallback, bias caveats (FER-2013, imbalanced corpora), no personal data stored.
-12. **Conclusion** — exactly **one paragraph** that summarizes what was built, the key result (best models chosen by comparison), and the honest limits/next step.
-13. **Thank you / Questions?** — clean closing slide.
+10. **Engineering Rigor & Quality** — 142 tests pass, ruff clean, notebook smoke, CI docker build; the macOS OpenMP subprocess-isolation fix (3 lines max).
+11. **Deployment** — Docker image, HF Spaces / Streamlit Cloud, graceful offline behaviour.
+12. **Ethics & Limitations** — non-diagnostic, synthetic fallback, bias caveats (FER-2013, imbalanced corpora), no personal data stored.
+13. **Conclusion** — exactly **one paragraph** that summarizes what was built, the key result (best models chosen by comparison), and the honest limits/next step.
+14. **Thank you / Questions?** — clean closing slide.
 
 **Chart rules (required)**
 - Generate charts with matplotlib, save as PNG, and embed them (do not use fake screenshots).

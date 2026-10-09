@@ -21,7 +21,7 @@ Fast checks:
 
 ```bash
 make lint      # ruff check (src app tests scripts)
-make test      # pytest (141 tests, incl. AppTest smoke of all 9 pages)
+make test      # pytest (142 tests, incl. AppTest smoke of all 9 pages)
 python scripts/smoke_app.py
 ```
 
