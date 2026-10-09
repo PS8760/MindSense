@@ -3,6 +3,7 @@
 > Paste the block below verbatim into the AI agent that builds the deck. It
 > should produce a **PowerPoint (.pptx)** via python-pptx. Keep the deck
 > minimal, clean, professional and easy to present — one idea per slide.
+> Present MindSense as **one complete project**, not as a list of experiments.
 
 ---
 
@@ -13,20 +14,20 @@ instructor for evaluation, so clarity, structure and honesty matter more than
 length. Use clear, simple, professional English throughout.
 
 **Ground truth — read these files first** (project root):
-- `README.md` (features, quickstart, experiment table)
+- `README.md` (features, quickstart, metrics table)
 - `docs/DECISIONS.md` (why decisions were made, incl. ethics & the crash fix)
-- `reports/metrics/leaderboard.json` and `reports/metrics/exp03* / exp04* / exp06* / exp07* .json` (do not invent numbers — use only these)
+- `reports/metrics/leaderboard.json` and the metric files under `reports/metrics/` (do not invent numbers — use only these)
 - `prompt.md` (original spec) only to understand requirements; do not copy verbatim
 
-**Project facts (verified — use these exact numbers)**
-- Streamlit web app (**9 pages**: Home + 8) plus a Python package (`src/mindsense`): PHQ-9/GAD-7/DASS scoring, rule-based "what stands out" feedback, community insights, crisis helplines, a face mood-cue page, and a calm-companion chatbot (**Calmer**).
-- **Not a diagnostic tool** — it is an educational project; this disclaimer must appear on the title slide.
-- Datasets: **10 public sources** (student depression, sentiment-mh, DASS-42, OSMI, Dreaddit, Drugs.com, FER-2013, …), harmonized into a **29,152-row** tabular risk dataset for training.
-- Every experiment **trains several model families and ranks them** on validation, then scores the winner on a held-out test split:
-  - **Exp 03 — image (FER-2013 mood cue):** logistic regression / random forest / XGBoost / MLP → **MLP wins, macro-F1 0.516** (precision 0.505, recall 0.536); exported to `models/face_emotion.onnx`.
-  - **Exp 04 tabular risk screen**: logistic / random forest / gradient boosting → **gradient boosting, macro-F1 0.843** (P 0.846, R 0.840).
-  - Exp 06 text screening (7 classes): Naive-Bayes / logistic / LinearSVC → **LinearSVC, macro-F1 0.684** (P 0.760, R 0.647).
-  - Exp 07 DASS-42 prognosis (3 output scores): linear / RF / gradient-boosting → **gradient-boosting, RMSE 10.50**.
+**The project as a whole (use these exact numbers)**
+- MindSense is a single Streamlit web app (**9 pages**: Home + 8) backed by a Python package (`src/mindsense`). It brings together: questionnaire risk screening (PHQ-9 / GAD-7 / DASS scoring), plain-language "what stands out" feedback, free-text mood screening, a face mood-cue page, community insights, crisis helplines, and a calm-companion chatbot (**Calmer**).
+- It is **not a diagnostic tool** — it is an educational project; this disclaimer must appear on the title slide.
+- Behind the app sits **one prediction suite made of four model components**. Present them as parts of the same system — **do not frame them as separate experiments**:
+  - **Mood cue (face image):** FER-2013 face model; several families were compared and an **MLP won with macro-F1 0.516** (precision 0.505, recall 0.536); exported to `models/face_emotion.onnx`.
+  - **Risk screening (questionnaire / tabular):** **gradient boosting won with macro-F1 0.843** (P 0.846, R 0.840).
+  - **Text screening (7 classes):** **LinearSVC won with macro-F1 0.684** (P 0.760, R 0.647).
+  - **Prognosis (DASS-42, three symptom scores):** **gradient boosting won with RMSE 10.50**.
+- Datasets: **10 public sources** (FER-2013, student depression, sentiment-mh, DASS-42, OSMI, Dreaddit, Drugs.com, …), harmonized into a **29,152-row** tabular risk dataset for training.
 - Engineering/deployment: Docker (non-root, port 7860, healthcheck), Hugging Face Spaces / Streamlit Cloud ready, CI (lint, **142 pytest tests**, notebook smoke, docker-image build), GitHub Actions.
 - Notable engineering story: fixed a macOS crash where torch + XGBoost conflicted over the OpenMP runtime by running the sklearn/XGBoost heads in a torch-free subprocess.
 
@@ -44,14 +45,14 @@ length. Use clear, simple, professional English throughout.
 3. **Objectives** — **5 short objectives**, each one line:
    1. Build a privacy-first, non-diagnostic wellness screening tool.
    2. Harmonize multiple public datasets into one reproducible pipeline.
-   3. Compare several model families per task and select the best objectively.
+   3. Compare several model families per capability and select the best objectively.
    4. Deliver a deployable app with an optional AI assistant for suggestions and Calmer.
    5. Assure quality, explainability and ethics through tests and transparent metrics.
 4. **Methodology — Architecture** — present the system as a clean **layered / modular architecture** (NOT a plain linear pipeline): a **Data layer → Modeling layer → Inference layer → Presentation layer**, four stacked bands with labelled blocks inside each band. Briefly note what each layer does.
 5. **Data** — the datasets, cleaning/harmonization, and the 29K+ rows; at most three bullets.
 6. **The Application** — the 9 user-facing pages as a simple flow/label grid; call out Calmer explicitly.
-7. **Performance Evaluation — Comparison of Every Model** — one wide table listing **every model of every experiment** with Accuracy, Precision, Recall, F1 (classification) and RMSE/R² (regression). Mark the best model in each experiment.
-8. **Performance Evaluation — Comparison Charts** — **include the model comparison charts** here (see chart rules below): one grouped bar chart of **macro-F1 per model for each classification experiment (Exp 03, 04, 06)** and one bar chart of **RMSE per model for Exp 07**. Best bar highlighted in the accent colour.
+7. **One System, Every Model Compared** — show the four model components **by capability, not by experiment**: one wide table per capability (mood cue, risk screening, text screening, prognosis) listing every model family tried with Accuracy, Precision, Recall, F1 (classification) and RMSE/R² (prognosis). Mark the winning model in each capability. Use capability headings (e.g., "Mood cue", "Risk screening"), never experiment numbers.
+8. **Performance Evaluation — Comparison Charts** — include the model comparison charts here (see chart rules below): one grouped bar chart of **macro-F1 per model across the three classification capabilities (mood cue, risk screening, text screening)** and one bar chart of **RMSE per model for prognosis**. Best bar highlighted in the accent colour.
 9. **Deployed Model & AI Assistant** — which model is shipped (image MLP → ONNX) and that the AI assistant is used **only** for check-in suggestions and Calmer, with offline fallbacks.
 10. **Engineering Rigor & Quality** — 142 tests pass, ruff clean, notebook smoke, CI docker build; the macOS OpenMP subprocess-isolation fix (3 lines max).
 11. **Deployment** — Docker image, HF Spaces / Streamlit Cloud, graceful offline behaviour.
@@ -63,7 +64,7 @@ length. Use clear, simple, professional English throughout.
 - Generate charts with matplotlib, save as PNG, and embed them (do not use fake screenshots).
 - Use the single accent color for the best model and a light gray (`#C9D3D0`) for the rest; no gradients, no 3-D, no emojis.
 - Chart titles should be insights (e.g., "The best model wins by a clear margin"), axis labels plain and short.
-- Grouped bar chart for classification macro-F1 (models on the x-axis, one group per experiment); a separate bar chart for regression RMSE (lower is better).
+- Grouped bar chart for classification macro-F1 (**models on the x-axis, one group per capability** — mood cue, risk screening, text screening); a separate bar chart for prognosis RMSE (lower is better).
 - Round every value to 3 decimals, exactly as given above.
 
 **Design rules (required)**
