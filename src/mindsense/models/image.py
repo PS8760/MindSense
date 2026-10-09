@@ -554,6 +554,11 @@ def compare_models(
     comparison: dict[str, dict[str, Any]] = {}
     zoo = [n for n in models if n != "mlp"]
     if zoo:
+        log.info(
+            "running zoo heads (%s) in a torch-free subprocess — "
+            "per-head lines stream live as each finishes; XGBoost is the slow one (~5 min)",
+            ", ".join(zoo),
+        )
         with tempfile.TemporaryDirectory() as td:
             frames_path = Path(td) / "frames.npz"
             np.savez(
@@ -567,12 +572,12 @@ def compare_models(
             out_path = Path(td) / "zoo.json"
             proc = subprocess.run(
                 [sys.executable, "-m", "mindsense.models.zoo", str(frames_path), str(out_path)],
-                capture_output=True,
                 text=True,
             )
             if proc.returncode != 0:
                 raise RuntimeError(
-                    f"zoo subprocess exited {proc.returncode}; stderr:\n{proc.stderr[-2000:]}"
+                    f"zoo subprocess exited {proc.returncode} (its logs streamed above; "
+                    f"out artifact {out_path} missing/incomplete)"
                 )
             comparison.update(json.loads(out_path.read_text()))
         for name, entry in comparison.items():

@@ -1,45 +1,45 @@
 {
-  "generated": "2026-10-08T20:40:18+00:00",
+  "generated": "2026-10-09T01:07:36+00:00",
   "seed": 42,
   "rows": {
-    "train": 30,
-    "val": 30,
-    "test": 30
+    "train": 26835,
+    "val": 5751,
+    "test": 5751
   },
-  "best_model": "random_forest",
+  "best_model": "gradient_boosting",
   "ranking": [
     {
-      "model": "random_forest",
-      "rmse_mean": 5.8983,
-      "r2_mean": -0.2415,
-      "rmse_depression_score": 5.8035,
-      "rmse_anxiety_score": 6.189,
-      "rmse_stress_score": 5.7024
+      "model": "gradient_boosting",
+      "rmse_mean": 10.5034,
+      "r2_mean": 0.0697,
+      "rmse_depression_score": 11.9533,
+      "rmse_anxiety_score": 9.5502,
+      "rmse_stress_score": 10.0068
     },
     {
       "model": "linear",
-      "rmse_mean": 6.2425,
-      "r2_mean": -0.3754,
-      "rmse_depression_score": 5.952,
-      "rmse_anxiety_score": 7.1112,
-      "rmse_stress_score": 5.6645
+      "rmse_mean": 10.548,
+      "r2_mean": 0.0618,
+      "rmse_depression_score": 12.0067,
+      "rmse_anxiety_score": 9.5986,
+      "rmse_stress_score": 10.0387
     },
     {
-      "model": "gradient_boosting",
-      "rmse_mean": 7.0197,
-      "r2_mean": -0.7598,
-      "rmse_depression_score": 6.8366,
-      "rmse_anxiety_score": 7.3934,
-      "rmse_stress_score": 6.829
+      "model": "random_forest",
+      "rmse_mean": 10.8728,
+      "r2_mean": 0.0036,
+      "rmse_depression_score": 12.4162,
+      "rmse_anxiety_score": 9.8651,
+      "rmse_stress_score": 10.3371
     }
   ],
   "test": {
-    "rmse_mean": 6.6915,
+    "rmse_mean": 10.4656,
     "rmse_by_target": {
-      "depression_score": 5.9595,
-      "anxiety_score": 5.7901,
-      "stress_score": 8.3249
+      "depression_score": 11.8892,
+      "anxiety_score": 9.5566,
+      "stress_score": 9.9512
     },
-    "n": 30
+    "n": 5751
   }
 }

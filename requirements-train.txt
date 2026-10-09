@@ -27,6 +27,7 @@ notebook-shim==0.2.4
 notebook==7.6.3
 onnx==1.23.2
 papermill==2.7.0
+tabulate==0.10.0
 tokenizers==0.23.2
 torch==2.14.1
 torchvision==0.29.1

@@ -71,8 +71,16 @@ def groq_key() -> str | None:
     return None
 
 
-def _chat(system: str, user: str, *, temperature: float = 0.6, max_tokens: int = 550) -> str:
-    """One Groq chat-completions call; tries both models before raising."""
+def _chat(system: str, user: str, *, temperature: float = 0.6, max_tokens: int = 1024) -> str:
+    """One Groq chat-completions call; tries both models before raising.
+
+    ``gpt-oss`` models are *reasoning* models: they spend tokens on the
+    ``reasoning`` field before producing ``content``. A small ``max_tokens``
+    budget is exhausted by reasoning, leaving ``content`` empty and the call
+    looking like a failure. We therefore give enough budget for reasoning +
+    the reply, and fall back to the ``reasoning`` text when ``content`` is
+    still empty.
+    """
     key = groq_key()
     if not key:
         raise RuntimeError("GROQ_API_KEY not configured")
@@ -97,7 +105,10 @@ def _chat(system: str, user: str, *, temperature: float = 0.6, max_tokens: int =
         except requests.RequestException as exc:  # network down → offline path
             raise RuntimeError(f"network error: {exc}") from exc
         if response.status_code == 200:
-            content = response.json()["choices"][0]["message"]["content"].strip()
+            message = response.json()["choices"][0]["message"]
+            content = (message.get("content") or "").strip()
+            if not content:  # reasoning model used its budget before the answer
+                content = (message.get("reasoning") or "").strip()
             if content:
                 return content
         last_error = f"HTTP {response.status_code}: {response.text[:180]}"

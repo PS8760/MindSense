@@ -1,35 +1,35 @@
 {
-  "generated": "2026-10-08T20:40:19+00:00",
+  "generated": "2026-10-09T01:06:25+00:00",
   "seed": 42,
   "rows": {
-    "train": 30,
-    "val": 30,
-    "test": 30
+    "train": 20406,
+    "val": 4373,
+    "test": 4373
   },
-  "best_model": "logistic",
+  "best_model": "gradient_boosting",
   "ranking": [
     {
+      "model": "gradient_boosting",
+      "accuracy": 0.8482,
+      "macro_f1": 0.8427,
+      "weighted_f1": 0.8475
+    },
+    {
       "model": "logistic",
-      "accuracy": 0.6333,
-      "macro_f1": 0.6329,
-      "weighted_f1": 0.6313
+      "accuracy": 0.8383,
+      "macro_f1": 0.8323,
+      "weighted_f1": 0.8375
     },
     {
       "model": "random_forest",
-      "accuracy": 0.6,
-      "macro_f1": 0.5928,
-      "weighted_f1": 0.5855
-    },
-    {
-      "model": "gradient_boosting",
-      "accuracy": 0.4667,
-      "macro_f1": 0.4643,
-      "weighted_f1": 0.469
+      "accuracy": 0.8306,
+      "macro_f1": 0.8248,
+      "weighted_f1": 0.83
     }
   ],
   "test": {
-    "accuracy": 0.4667,
-    "macro_f1": 0.457,
-    "n": 30
+    "accuracy": 0.8454,
+    "macro_f1": 0.8397,
+    "n": 4373
   }
 }

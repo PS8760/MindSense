@@ -8,8 +8,8 @@
   "training": {
     "face": {
       "experiment": "exp03",
-      "date": "2026-10-08T20:26:09.927966+00:00",
-      "git": "dc8e232",
+      "date": "2026-10-09T01:06:16.333896+00:00",
+      "git": "5fdef14",
       "datasets": {
         "fer2013": "real"
       },
@@ -46,7 +46,7 @@
       },
       "comparison": {
         "logreg": {
-          "fit_seconds": 35.98,
+          "fit_seconds": 92.8,
           "val": {
             "accuracy": 0.497,
             "macro_precision": 0.4545,
@@ -101,7 +101,7 @@
           }
         },
         "forest": {
-          "fit_seconds": 29.78,
+          "fit_seconds": 59.02,
           "val": {
             "accuracy": 0.4866,
             "macro_precision": 0.554,
@@ -156,7 +156,7 @@
           }
         },
         "xgboost": {
-          "fit_seconds": 325.81,
+          "fit_seconds": 588.14,
           "val": {
             "accuracy": 0.5361,
             "macro_precision": 0.5979,
@@ -211,7 +211,7 @@
           }
         },
         "mlp": {
-          "fit_seconds": 18.9,
+          "fit_seconds": 55.6,
           "val": {
             "accuracy": 0.5423,
             "macro_precision": 0.5003,

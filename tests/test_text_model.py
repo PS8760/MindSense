@@ -34,9 +34,7 @@ def _frame(n: int) -> pd.DataFrame:
         text += p + q
         label += ["Anxiety"] * half + ["Normal"] * half
     split = ["train"] * rows + ["val"] * rows + ["test"] * rows
-    return pd.DataFrame(
-        {"text_norm": text[: n], "label": label[: n], "split": split}
-    )
+    return pd.DataFrame({"text_norm": text[:n], "label": label[:n], "split": split})
 
 
 def test_train_text_ranks_models_and_reports_test_metrics() -> None:
